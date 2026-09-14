@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+  <head>
+    <title>a wild auth!</title>
+    <meta charset="utf-8" />
+    <!-- looking at the code??? cheater.....-->
+    <style>
+      body {
+        background-color: #f5d9ee;
+        background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40"%3E%3Crect width="40" height="40" fill="%23d9e8f5"/%3E%3Ccircle cx="4" cy="4" r="1.5" fill="%23b3d1ec"/%3E%3Ccircle cx="24" cy="18" r="1.5" fill="%23b3d1ec"/%3E%3Ccircle cx="34" cy="32" r="1.5" fill="%23b3d1ec"/%3E%3C/svg%3E');
+        color: #1f3f5c;
+        font-family: "Comic Sans MS", "Times New Roman", cursive, serif;
+        margin: 0;
+        padding: 0px;
+        -webkit-font-smoothing: antialiased;
+      }
+      table.main {
+        width: 880px;
+        margin: 20px auto;
+        background: #f1f8fd;
+        border: 4px double #4a89c9;
+      }
+      td {
+        padding: 10px;
+        padding: 10px 10px;
+      }
+      h1 {
+        color: #3d78c2;
+        text-align: center;
+        text-shadow:
+          2px 2px #cae4f9,
+          2px 2px 1px #e1a2d2;
+        font-size: 34px;
+        font-weight: bold;
+      }
+      h2 {
+        color: #2a5f8f;
+        border-bottom: 2px dashed #9dc3e5;
+        margin-bottom: 8px;
+      }
+      a {
+        color: #4a89c9;
+        text-decoration: underline;
+      }
+      a:visited {
+        color: #35618f;
+      }
+      a:hover {
+        color: #e8a13e !important;
+      }
+      .blink {
+        animation: blinker 1s step-start infinite;
+        -webkit-animation: blinker 1s step-start infinite;
+      }
+      @-webkit-keyframes blinker {
+        50% {
+          opacity: 0;
+        }
+      }
+      @keyframes blinker {
+        50% {
+          opacity: 0;
+        }
+      }
+      .marquee-wrap {
+        background: #cfe4f6;
+        border: 2px solid #4a89c9;
+        padding: 5px;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .marquee-inner {
+        display: inline-block;
+        padding-left: 100%;
+        animation: scroll 14s linear infinite;
+        color: #1f4d75;
+        font-weight: bold;
+      }
+      @keyframes scroll {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+      .tag {
+        background: #e2eefa;
+        border: 1px dashed #4a89c9;
+        padding: 6px;
+        font-size: 12px;
+        margin: 4px 0px;
+      }
+      /* yes i know this is bad and its giving larp */
+      .oldbutton {
+        display: inline-block;
+        border: 2px outset #a0c4e0;
+        background: #d9ecf7;
+        color: #1f3f5c;
+        padding: 3px 8px;
+        text-decoration: none;
+        font-family: "Times New Roman", serif;
+        font-size: 12px;
+        margin: 2px;
+        cursor: pointer;
+      }
+      .divider {
+        text-align: center;
+        color: #4a89c9;
+        letter-spacing: 3px;
+      }
+      hr {
+        border: 0;
+        height: 1px;
+        background: repeating-linear-gradient(
+          90deg,
+          #4988c8,
+          #4a89c9 4px,
+          transparent 4px,
+          transparent 8px
+        );
+      }
+      .hitcounter {
+        font-family: "Courier New", monospace;
+        background: #10293d;
+        color: #7ac2ff;
+        border: 1px solid #1f3f5c;
+        padding: 2px 6px;
+        letter-spacing: 2px;
+        font-size: 14px;
+      }
+      .sig {
+        font-size: 11px;
+        color: #6b93b2;
+        text-align: center;
+        margin-top: 10px;
+      }
+      .rare-bg {
+        background-color: #f5d9e8 !important;
+      }
+      .egg-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #10293d;
+        color: #7ac2ff;
+        border: 1px solid #4a89c9;
+        padding: 8px 14px;
+        font-family: "courier new", monospace;
+        z-index: 999;
+        animation: fadeout 3s forwards;
+        -webkit-animation: fadeout 3s forwards;
+      }
+      @keyframes fadeout {
+        0% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <table class="main" cellspacing="0" cellpadding="0">
+      <tr>
+        <td>
+          <div class="marquee-wrap">
+            <span class="marquee-inner"
+              >welcome to my personal hellhole that i barely maintain! bleach
+              your eyeballs! bleach your eyeballs! bleach your eyeballs!
+            </span>
+          </div>
+
+          <h1>auth's homepage <span class="blink">*</span></h1>
+
+          <div class="divider">---------------------</div>
+
+          <h2>about me</h2>
+          <p>
+            hi, i am auth! i build games and other stuff usually solo! i am an
+            hobbyist active-ish linux contributor and i have no idea what
+            subsystem to stick with (but im interested in net and watchdog..) my
+            main project is auth's RNG. yes i tried to make this look oldweb
+            like and yes i am too much of a dumbass to represent the indie web
+            style.
+          </p>
+          <p>
+            github:
+            <a href="https://github.com/authsrng-game">authsrng-game</a> /
+            <a href="https://github.com/auth1ery">auth1ery</a>
+          </p>
+
+          <hr />
+
+          <h2>my projects</h2>
+
+          <div class="tag">
+            <b>auth's RNG</b> browser-based incremental/gacha game!! 500+ named
+            rarities, custom animation dsl, its own theme editor,
+            accounts/social layer, the works and blahs!<br />
+            <a href="https://authsrng.xyz">authsrng.xyz</a> (stable) /
+            <a href="https://nightly.authsrng.xyz">nightly.authsrng.xyz</a>
+            (nightly) / android on
+            <a href="https://f-droid.org/en/packages/com.ivylopez.authsrng/"
+              >f-droid</a
+            >
+          </div>
+
+          <div class="tag">
+            <b>asterisk</b> custom chat platform built from scratch for auth's
+            rng but it failed horrendously. we dont talk about it.
+          </div>
+
+          <div class="tag">
+            <b>cupcake</b> singlefile-ish visual js node editor. we dont talk about
+            it.
+          </div>
+
+          <div id="hidden-panel" style="display: none">
+            <div class="tag">
+              you found epic!! here is auths rng for no reason:<br />
+              <iframe
+                src="https://authsrng.xyz"
+                width="100%"
+                height="300"
+                style="border: 2px inset #a0c4e0; margin-top: 6px"
+              ></iframe>
+            </div>
+          </div>
+
+          <hr />
+
+          <h2>linux kernel contributions</h2>
+          <p>subsystems: usb/hid, risc-v, net, watchdog, btrfs</p>
+          <ul>
+            <li>
+              f_midi2 use-after-free fix: landed!! in stable 7.2.5 and 6.18.51
+              and more
+            </li>
+            <li>
+              net/starfire ioaddr sign-extension fix v3: awaiting net-next
+            </li>
+            <li>risc-v hwprobe has_fpu() simplification: queued for v7.3-rc</li>
+            <li>
+              decompress_unxz cleanup: sitting in a maintainer's
+              mm-nonmm-unstable branch
+            </li>
+            <li>e1000e off-by-one fix.. thats all i got</li>
+            <li>
+              ~9 more patches accepted upstream across various other subsystems
+            </li>
+          </ul>
+
+          <hr />
+
+          <div style="text-align: center">
+            <a class="oldbutton" href="auth.atabook.org">sign my guestbook</a>
+          </div>
+
+          <p style="text-align: center; margin-top: 20px">
+            you are visitor number
+            <script
+              type="text/javascript"
+              src="https://www.freevisitorcounters.com/auth.php?id=adb9be950ff8124d751a4eab10d98c1ffd4393e4"
+            ></script>
+            <script
+              type="text/javascript"
+              src="https://www.freevisitorcounters.com/en/home/counter/1643619/t/1"
+            ></script>
+          </p>
+
+          <p style="text-align: center">
+            join my epic
+            <a href="https://discord.gg/mTDw8jJYqX">discord server!</a>
+          </p>
+
+          <p style="text-align: center">
+            <a href="https://github.com/auth1ery/epicpersonalsite">source</a>
+          </p>
+
+          <p class="sig">"Believe you can and you're halfway there."</p>
+        </td>
+      </tr>
+    </table>
+    <script>
+      (function () {
+        var konami = [
+          "ArrowUp",
+          "ArrowUp",
+          "ArrowDown",
+          "ArrowDown",
+          "ArrowLeft",
+          "ArrowRight",
+          "ArrowLeft",
+          "ArrowRight",
+          "b",
+          "a",
+        ];
+        let konamiPos = 0;
+
+        window.addEventListener("keydown", function (e) {
+          konamiPos = e.key === konami[konamiPos] ? konamiPos + 1 : 0;
+          if (konamiPos === konami.length) {
+            konamiPos = 0;
+            dropToast("fuck you the konami code wont work here!!!!!!");
+            document.body.classList.add("rare-bg");
+            setTimeout(function () {
+              document.body.classList.remove("rare-bg");
+            }, 4000);
+          }
+        });
+
+        function dropToast(text) {
+          const toast = document.createElement("div");
+          toast.className = "egg-toast";
+          toast.textContent = text;
+          document.body.appendChild(toast);
+          setTimeout(function () {
+            toast.remove();
+          }, 3000);
+        }
+
+        const star = document.querySelector(".blink");
+        let starClicks = 0;
+        if (star) {
+          star.style.cursor = "pointer";
+          star.addEventListener("click", function () {
+            starClicks++;
+            if (starClicks === 5) {
+              const hidden = document.getElementById("hidden-panel");
+              if (hidden) hidden.style.display = "block";
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
