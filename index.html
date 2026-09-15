@@ -167,6 +167,7 @@
   <body>
     <table class="main" cellspacing="0" cellpadding="0">
       <tr>
+        <!-- thanks for prettier for making the code atleast slightly readable-->
         <td>
           <div class="marquee-wrap">
             <span class="marquee-inner"
@@ -176,9 +177,12 @@
           </div>
 
           <h1>auth's homepage <span class="blink">*</span></h1>
+          <p style="text-align: center">
+            if you'd like to see my portfolio, please visit
+            <a href="portfolio.cloudlull.fyi">here</a>. (dead link for now)
+          </p>
 
           <div class="divider">---------------------</div>
-
           <h2>about me</h2>
           <p>
             hi, i am auth! i build games and other stuff usually solo! i am an
@@ -216,13 +220,14 @@
           </div>
 
           <div class="tag">
-            <b>cupcake</b> singlefile-ish visual js node editor. we dont talk about
-            it.
+            <b>cupcake</b> singlefile-ish visual js node editor. we dont talk
+            about it.
           </div>
 
           <div id="hidden-panel" style="display: none">
             <div class="tag">
-              you found epic!! here is auths rng for no reason:<br />
+              you found epic!! here is auths rng for no reason (this most
+              definitely wont work because of web restrictions):<br />
               <iframe
                 src="https://authsrng.xyz"
                 width="100%"
@@ -234,8 +239,31 @@
 
           <hr />
 
+          <h2>uses/setup</h2>
+          <div class="tag">
+            <b>os:</b> (arch linux but rebranded to bloom linux and with my own
+            dotfiles and stuff with hyprland okay this line is getting too
+            long)<br />
+            <b>editor:</b> (vscodium)<br />
+            <b>terminal:</b> (kitty)<br />
+            <b>shell:</b> (fish!)<br />
+            <b>keyboard:</b> (my laptop keyboard itself)<br />
+            <b>browser:</b> (helium)<br />
+            <b>daily driver lang:</b> (usually C or JS)
+          </div>
+
+          <hr />
+
           <h2>linux kernel contributions</h2>
-          <p>subsystems: usb/hid, risc-v, net, watchdog, btrfs</p>
+          <p>current subsystems: watchdog, mm</p>
+          <p style="font-size: 12px; color: #6b93b2">
+            (patches below span a few other subsystems from earlier on)
+          </p>
+          <p>
+            ive atmost definitely may have pissed some kernel maintainers so bad
+            they dont want to read my patches again which is something im NOT
+            proud of by the way.. just wanted to pointed that out.
+          </p>
           <ul>
             <li>
               f_midi2 use-after-free fix: landed!! in stable 7.2.5 and 6.18.51
@@ -249,27 +277,88 @@
               decompress_unxz cleanup: sitting in a maintainer's
               mm-nonmm-unstable branch
             </li>
-            <li>e1000e off-by-one fix.. thats all i got</li>
+            <li>e1000e off-by-one fix.. thats all i got for this one</li>
             <li>
               ~9 more patches accepted upstream across various other subsystems
             </li>
+            <li>
+              i review patches as well. i do full-time reviewer and part-time
+              contributor.
+            </li>
           </ul>
-
+          <p style="font-size: 12px; color: #6b93b2">
+            (proof i am not lying:
+            <a
+              href="https://lore.kernel.org/all/?q=skunkolee%40gmail.com"
+              target="_blank"
+              rel="noopener"
+              >here</a
+            >
+            if you want a live list instead of manual upkeep and also want to
+            see if im bullshitting or not! i do not maintain this list
+            frequently)
+          </p>
           <hr />
 
           <div style="text-align: center">
             <a class="oldbutton" href="auth.atabook.org">sign my guestbook</a>
           </div>
 
+          <br />
+
+          <div class="tag" id="lanyard-tag">
+            <b>discord now:</b> <span id="lanyard-status">loading...</span>
+          </div>
+
+          <script>
+            (function () {
+              const DISCORD_ID = "1227759305852190801";
+              const el = document.getElementById("lanyard-status");
+
+              function render(data) {
+                if (!data) {
+                  el.textContent = "couldn't fetch status :(";
+                  return;
+                }
+                const activity =
+                  data.activities.find((a) => a.type === 2) || // type 2 = listening (Spotify)
+                  data.activities.find((a) => a.type === 0); // type 0 = playing
+
+                let text = `${data.discord_status}`;
+                if (data.listening_to_spotify && data.spotify) {
+                  text += ` > listening to "${data.spotify.song}" by ${data.spotify.artist}`;
+                } else if (activity) {
+                  text += ` > playing ${activity.name}`;
+                }
+                el.textContent = text;
+              }
+
+              // initial fetch
+              fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+                .then((r) => r.json())
+                .then((res) => render(res.data))
+                .catch(() => (el.textContent = "offline / api down!!"));
+
+              const ws = new WebSocket("wss://api.lanyard.rest/socket");
+              ws.onopen = () => {
+                ws.send(
+                  JSON.stringify({ op: 2, d: { subscribe_to_id: DISCORD_ID } }),
+                );
+              };
+              ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                if (msg.t === "INIT_STATE" || msg.t === "PRESENCE_UPDATE") {
+                  render(msg.d);
+                }
+              };
+            })();
+          </script>
+
           <p style="text-align: center; margin-top: 20px">
             you are visitor number
             <script
               type="text/javascript"
-              src="https://www.freevisitorcounters.com/auth.php?id=adb9be950ff8124d751a4eab10d98c1ffd4393e4"
-            ></script>
-            <script
-              type="text/javascript"
-              src="https://www.freevisitorcounters.com/en/home/counter/1643619/t/1"
+              src="https://counter.websiteout.com/js/13/0/0/1"
             ></script>
           </p>
 
