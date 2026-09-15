@@ -1,0 +1,523 @@
+<!doctype html>
+<html>
+  <body
+    style="
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    "
+  >
+    <h2>blogger site crawler (because google cant)</h2>
+    <button onclick="run()" style="padding: 10px 15px; font-size: 16px">
+      scan
+    </button>
+    <button
+      onclick="toggleAuto()"
+      id="autoBtn"
+      style="padding: 10px 15px; font-size: 16px"
+    >
+      start auto scan
+    </button>
+    <div id="autoStatus" style="margin-top: 10px; font-weight: bold"></div>
+    <div id="out" style="margin-top: 15px"></div>
+    <div id="summary" style="margin-top: 15px"></div>
+
+    <script>
+      const out = document.getElementById("out");
+      const baseWords = [
+        "tech",
+        "dev",
+        "blog",
+        "notes",
+        "daily",
+        "random",
+        "coding",
+        "life",
+        "stuff",
+        "auth",
+        "studio",
+        "diary",
+        "news",
+        "web",
+        "code",
+        "hacks",
+        "journal",
+        "log",
+        "site",
+        "world",
+        "mind",
+        "ideas",
+        "project",
+        "lab",
+        "space",
+        "digital",
+        "pixel",
+        "byte",
+        "script",
+        "craft",
+        "makers",
+        "build",
+        "create",
+        "design",
+        "art",
+        "photo",
+        "words",
+        "story",
+        "thoughts",
+        "musings",
+        "review",
+        "guide",
+        "howto",
+        "learn",
+        "geek",
+        "nerd",
+        "retro",
+        "vintage",
+        "indie",
+        "open",
+      ];
+      let learned = [];
+      let autoRunning = false;
+      let autoGroups = {
+        REAL: [],
+        NONEXISTENT: [],
+        DELETED: [],
+        INVITE_ONLY: [],
+        uncertain: [],
+      };
+      let autoCount = 0;
+
+      function log(html) {
+        const d = document.createElement("div");
+        d.innerHTML = html;
+        out.appendChild(d);
+      }
+
+      function makeDropdown(title, content) {
+        const w = document.createElement("div");
+        const h = document.createElement("div");
+        const b = document.createElement("div");
+        h.innerText = title;
+        h.style = "cursor:pointer;font-weight:bold;margin-top:5px;";
+        b.innerHTML = content;
+        b.style = "display:none;padding-left:10px;";
+        h.onclick = () =>
+          (b.style.display = b.style.display === "none" ? "block" : "none");
+        w.appendChild(h);
+        w.appendChild(b);
+        return w;
+      }
+
+      async function dohCheck(name) {
+        try {
+          const r = await fetch(
+            "https://cloudflare-dns.com/dns-query?name=" + name,
+            { headers: { accept: "application/dns-json" } },
+          );
+          return await r.json();
+        } catch {
+          return { Status: "ERR" };
+        }
+      }
+
+      async function dohCheckExtra(name, type) {
+        try {
+          const r = await fetch(
+            "https://cloudflare-dns.com/dns-query?name=" +
+              name +
+              "&type=" +
+              type,
+            { headers: { accept: "application/dns-json" } },
+          );
+          return await r.json();
+        } catch {
+          return { Status: "ERR" };
+        }
+      }
+
+      function iframeCheck(url) {
+        return new Promise((res) => {
+          const f = document.createElement("iframe");
+          f.style = "display:none";
+          let done = false;
+          const fin = (x) => {
+            if (done) return;
+            done = true;
+            document.body.removeChild(f);
+            res(x);
+          };
+          const t = setTimeout(() => fin("timeout"), 3000);
+          f.onload = () => {
+            clearTimeout(t);
+            fin("loads");
+          };
+          f.onerror = () => {
+            clearTimeout(t);
+            fin("dead");
+          };
+          f.src = url;
+          document.body.appendChild(f);
+        });
+      }
+
+      function probeFavicon(url) {
+        return new Promise((res) => {
+          const i = new Image();
+          let done = false;
+          const start = performance.now();
+          const fin = (x) => {
+            if (done) return;
+            done = true;
+            res({ status: x, time: Math.round(performance.now() - start) });
+          };
+          i.onload = () => fin("ok");
+          i.onerror = () => fin("err");
+          i.src = url + "/favicon.ico?" + Math.random();
+        });
+      }
+
+      function probeAltIcon(url) {
+        return new Promise((res) => {
+          const i = new Image();
+          let done = false;
+          const fin = (x) => {
+            if (done) return;
+            done = true;
+            res(x);
+          };
+          i.onload = () => fin("ok");
+          i.onerror = () => fin("err");
+          i.src = url + "/apple-touch-icon.png?" + Math.random();
+        });
+      }
+
+      async function redirectProbe(url) {
+        try {
+          const r = await fetch(url, { redirect: "manual" });
+          return { redirects: r.type === "opaqueredirect" };
+        } catch {
+          return { redirects: false };
+        }
+      }
+
+      async function contentProbe(url) {
+        try {
+          const r = await fetch(
+            "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+          );
+          const text = await r.text();
+          const lower = text.toLowerCase();
+          let signature = "none";
+          if (lower.includes("open to invited readers only"))
+            signature = "invite_only";
+          else if (
+            lower.includes("blog has been removed") ||
+            lower.includes("this blog is no longer available")
+          )
+            signature = "removed";
+          else if (lower.includes("<title>")) signature = "has_title";
+          const titleMatch = text.match(/<title>([^<]*)<\/title>/i);
+          return {
+            ok: true,
+            signature,
+            title: titleMatch ? titleMatch[1].trim() : null,
+          };
+        } catch {
+          return { ok: false, signature: "none", title: null };
+        }
+      }
+
+      async function timingProbe(url) {
+        const s = performance.now();
+        let type = "unknown";
+        try {
+          const r = await fetch(url, { mode: "no-cors" });
+          type = r.type || "unknown";
+        } catch {
+          type = "failed";
+        }
+        return { ms: performance.now() - s, type };
+      }
+
+      async function headProbe(url) {
+        try {
+          const r = await fetch(url, { mode: "no-cors", method: "HEAD" });
+          return { ok: true, type: r.type, redirected: r.redirected };
+        } catch {
+          return { ok: false, type: "failed", redirected: false };
+        }
+      }
+
+      function feedProbe(url) {
+        return new Promise((res) => {
+          const cbName = "feedcb" + Math.floor(Math.random() * 1000000);
+          const s = document.createElement("script");
+          let done = false;
+          const cleanup = () => {
+            delete window[cbName];
+            if (s.parentNode) s.parentNode.removeChild(s);
+          };
+          const t = setTimeout(() => {
+            if (done) return;
+            done = true;
+            cleanup();
+            res({ ok: false, title: null, postCount: null });
+          }, 3500);
+          window[cbName] = (data) => {
+            if (done) return;
+            done = true;
+            clearTimeout(t);
+            cleanup();
+            try {
+              const title = data.feed && data.feed.title && data.feed.title.$t;
+              const postCount =
+                data.feed && data.feed.openSearch$totalResults
+                  ? data.feed.openSearch$totalResults.$t
+                  : null;
+              res({ ok: true, title: title || null, postCount });
+            } catch {
+              res({ ok: true, title: null, postCount: null });
+            }
+          };
+          s.onerror = () => {
+            if (done) return;
+            done = true;
+            clearTimeout(t);
+            cleanup();
+            res({ ok: false, title: null, postCount: null });
+          };
+          s.src =
+            url + "/feeds/posts/default?alt=json-in-script&callback=" + cbName;
+          document.body.appendChild(s);
+        });
+      }
+
+      async function check(url, silent) {
+        if (!silent) {
+          out.appendChild(document.createElement("hr"));
+          log(
+            "scanning: <a href='" + url + "' target='_blank'>" + url + "</a>",
+          );
+        }
+
+        const domain = url.replace("https://", "");
+        const p1 = dohCheck(domain);
+        const p2 = probeFavicon(url);
+        const p3 = iframeCheck(url);
+        const p4 = timingProbe(url);
+        const p5 = dohCheckExtra(domain, "CNAME");
+        const p6 = dohCheckExtra(domain, "AAAA");
+        const p7 = headProbe(url);
+        const p8 = feedProbe(url);
+        const p9 = probeAltIcon(url);
+        const p10 = redirectProbe(url);
+        const p11 = contentProbe(url);
+
+        const [
+          dns,
+          fav,
+          ifr,
+          time,
+          cname,
+          aaaa,
+          head,
+          feed,
+          altIcon,
+          redir,
+          content,
+        ] = await Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11]);
+
+        const dnsExists = dns.Status === 0;
+
+        let score = 0;
+        if (dnsExists) score += 1;
+        if (ifr === "loads") score += 1;
+        if (fav.status === "ok" || altIcon === "ok") score += 1;
+        if (feed.ok && feed.title) score += 3;
+        if (head.ok) score += 1;
+        if (content.ok && content.signature === "has_title") score += 2;
+        if (redir.redirects) score += 1;
+
+        let verdict = "";
+        if (!dnsExists) verdict = "NONEXISTENT";
+        else if (content.ok && content.signature === "invite_only")
+          verdict = "INVITE_ONLY";
+        else if (content.ok && content.signature === "removed")
+          verdict = "DELETED";
+        else if (feed.ok && feed.title) verdict = "REAL";
+        else if (
+          dnsExists &&
+          ifr === "loads" &&
+          fav.status === "err" &&
+          altIcon === "err" &&
+          !feed.ok
+        )
+          verdict = "DELETED";
+        else if (score >= 3) verdict = "REAL";
+        else verdict = "uncertain";
+
+        if (verdict === "REAL") {
+          const name = url.replace("https://", "").replace(".blogspot.com", "");
+          if (!learned.includes(name)) learned.push(name);
+        }
+
+        const dnsAnswer =
+          dns.Answer && dns.Answer.length
+            ? dns.Answer.map((a) => a.data).join(", ")
+            : "none";
+        const cnameAnswer =
+          cname.Answer && cname.Answer.length
+            ? cname.Answer.map((a) => a.data).join(", ")
+            : "none";
+        const aaaaAnswer =
+          aaaa.Answer && aaaa.Answer.length
+            ? aaaa.Answer.map((a) => a.data).join(", ")
+            : "none";
+
+        if (!silent) {
+          const box = makeDropdown(
+            "result: " + verdict + " (confidence score: " + score + ")",
+            `
+    dns status: ${dns.Status !== undefined ? dns.Status : "n/a"} (${dnsExists ? "exists" : "NXDOMAIN"})<br>
+    dns records: ${dnsAnswer}<br>
+    cname records: ${cnameAnswer}<br>
+    aaaa records: ${aaaaAnswer}<br>
+    favicon: ${fav.status} (${fav.time}ms)<br>
+    alt icon: ${altIcon}<br>
+    iframe: ${ifr}<br>
+    fetch timing: ${Math.round(time.ms)}ms, response type: ${time.type}<br>
+    head probe: ${head.ok ? "responded" : "failed"}, type: ${head.type}, redirected: ${head.redirected}<br>
+    redirect probe: ${redir.redirects ? "redirects elsewhere (likely custom domain)" : "no redirect"}<br>
+    feed probe: ${feed.ok ? "responded" : "no response"}, title: ${feed.title || "none"}, post count: ${feed.postCount || "unknown"}<br>
+    content probe: ${content.ok ? "read" : "failed"}, signature: ${content.signature}, page title: ${content.title || "none"}<br>
+    checked at: ${new Date().toLocaleTimeString()}
+    `,
+          );
+          out.appendChild(box);
+        }
+
+        return { url, verdict, score, feedTitle: feed.title || content.title };
+      }
+
+      function randomLetters(n) {
+        const c = "abcdefghijklmnopqrstuvwxyz";
+        let s = "";
+        for (let i = 0; i < n; i++)
+          s += c[Math.floor(Math.random() * c.length)];
+        return s;
+      }
+
+      function chooseCandidate() {
+        const pool = [...baseWords, ...learned];
+        if (learned.length > 0 && Math.random() < 0.3) {
+          const base = learned[Math.floor(Math.random() * learned.length)];
+          return base + randomLetters(2);
+        }
+        const a = pool[Math.floor(Math.random() * pool.length)];
+        const b = pool[Math.floor(Math.random() * pool.length)];
+        return a + b;
+      }
+
+      function makeURL() {
+        return "https://" + chooseCandidate() + ".blogspot.com";
+      }
+
+      async function run() {
+        out.innerHTML = "";
+        for (let i = 0; i < 5; i++) {
+          await check(makeURL());
+        }
+      }
+
+      function updateAutoStatus() {
+        const s = document.getElementById("autoStatus");
+        s.innerHTML =
+          "scanned: " +
+          autoCount +
+          " | REAL: " +
+          autoGroups.REAL.length +
+          " | uncertain: " +
+          autoGroups.uncertain.length +
+          " | INVITE_ONLY: " +
+          autoGroups.INVITE_ONLY.length +
+          " | DELETED: " +
+          autoGroups.DELETED.length +
+          " | NONEXISTENT: " +
+          autoGroups.NONEXISTENT.length;
+      }
+
+      function renderSummary() {
+        const s = document.getElementById("summary");
+        s.innerHTML = "";
+        const heading = document.createElement("h3");
+        heading.innerText = "auto scan summary (" + autoCount + " checked)";
+        s.appendChild(heading);
+
+        for (const group of [
+          "REAL",
+          "uncertain",
+          "INVITE_ONLY",
+          "DELETED",
+          "NONEXISTENT",
+        ]) {
+          const items = autoGroups[group];
+          const list = items
+            .map(
+              (it) =>
+                "<a href='" +
+                it.url +
+                "' target='_blank'>" +
+                it.url +
+                "</a>" +
+                (it.feedTitle ? " (" + it.feedTitle + ")" : ""),
+            )
+            .join("<br>");
+          const box = makeDropdown(
+            group + ": " + items.length,
+            list.length ? list : "none",
+          );
+          s.appendChild(box);
+        }
+      }
+
+      function delay(ms) {
+        return new Promise((res) => setTimeout(res, ms));
+      }
+
+      async function autoLoop() {
+        while (autoRunning) {
+          const url = makeURL();
+          const result = await check(url, true);
+          autoGroups[result.verdict].push(result);
+          autoCount++;
+          updateAutoStatus();
+          await delay(600);
+        }
+      }
+
+      function toggleAuto() {
+        const btn = document.getElementById("autoBtn");
+        if (!autoRunning) {
+          autoRunning = true;
+          autoGroups = {
+            REAL: [],
+            NONEXISTENT: [],
+            DELETED: [],
+            INVITE_ONLY: [],
+            uncertain: [],
+          };
+          autoCount = 0;
+          document.getElementById("summary").innerHTML = "";
+          updateAutoStatus();
+          btn.innerText = "stop auto scan";
+          autoLoop();
+        } else {
+          autoRunning = false;
+          btn.innerText = "start auto scan";
+          renderSummary();
+        }
+      }
+    </script>
+  </body>
+</html>
