@@ -1,431 +1,245 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>a wild auth!</title>
-    <meta charset="utf-8" />
-    <!-- looking at the code??? cheater.....-->
-    <style>
-      body {
-        background-color: #f5d9ee;
-        background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40"%3E%3Crect width="40" height="40" fill="%23d9e8f5"/%3E%3Ccircle cx="4" cy="4" r="1.5" fill="%23b3d1ec"/%3E%3Ccircle cx="24" cy="18" r="1.5" fill="%23b3d1ec"/%3E%3Ccircle cx="34" cy="32" r="1.5" fill="%23b3d1ec"/%3E%3C/svg%3E');
-        color: #1f3f5c;
-        font-family: "Comic Sans MS", "Times New Roman", cursive, serif;
-        margin: 0;
-        padding: 0px;
-        -webkit-font-smoothing: antialiased;
-      }
-      table.main {
-        width: 880px;
-        margin: 20px auto;
-        background: #f1f8fd;
-        border: 4px double #4a89c9;
-      }
-      td {
-        padding: 10px;
-        padding: 10px 10px;
-      }
-      h1 {
-        color: #3d78c2;
-        text-align: center;
-        text-shadow:
-          2px 2px #cae4f9,
-          2px 2px 1px #e1a2d2;
-        font-size: 34px;
-        font-weight: bold;
-      }
-      h2 {
-        color: #2a5f8f;
-        border-bottom: 2px dashed #9dc3e5;
-        margin-bottom: 8px;
-      }
-      a {
-        color: #4a89c9;
-        text-decoration: underline;
-      }
-      a:visited {
-        color: #35618f;
-      }
-      a:hover {
-        color: #e8a13e !important;
-      }
-      .blink {
-        animation: blinker 1s step-start infinite;
-        -webkit-animation: blinker 1s step-start infinite;
-      }
-      @-webkit-keyframes blinker {
-        50% {
-          opacity: 0;
-        }
-      }
-      @keyframes blinker {
-        50% {
-          opacity: 0;
-        }
-      }
-      .marquee-wrap {
-        background: #cfe4f6;
-        border: 2px solid #4a89c9;
-        padding: 5px;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      .marquee-inner {
-        display: inline-block;
-        padding-left: 100%;
-        animation: scroll 14s linear infinite;
-        color: #1f4d75;
-        font-weight: bold;
-      }
-      @keyframes scroll {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(-100%);
-        }
-      }
-      .tag {
-        background: #e2eefa;
-        border: 1px dashed #4a89c9;
-        padding: 6px;
-        font-size: 12px;
-        margin: 4px 0px;
-      }
-      /* yes i know this is bad and its giving larp */
-      .oldbutton {
-        display: inline-block;
-        border: 2px outset #a0c4e0;
-        background: #d9ecf7;
-        color: #1f3f5c;
-        padding: 3px 8px;
-        text-decoration: none;
-        font-family: "Times New Roman", serif;
-        font-size: 12px;
-        margin: 2px;
-        cursor: pointer;
-      }
-      .divider {
-        text-align: center;
-        color: #4a89c9;
-        letter-spacing: 3px;
-      }
-      hr {
-        border: 0;
-        height: 1px;
-        background: repeating-linear-gradient(
-          90deg,
-          #4988c8,
-          #4a89c9 4px,
-          transparent 4px,
-          transparent 8px
-        );
-      }
-      .hitcounter {
-        font-family: "Courier New", monospace;
-        background: #10293d;
-        color: #7ac2ff;
-        border: 1px solid #1f3f5c;
-        padding: 2px 6px;
-        letter-spacing: 2px;
-        font-size: 14px;
-      }
-      .sig {
-        font-size: 11px;
-        color: #6b93b2;
-        text-align: center;
-        margin-top: 10px;
-      }
-      .rare-bg {
-        background-color: #f5d9e8 !important;
-      }
-      .egg-toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #10293d;
-        color: #7ac2ff;
-        border: 1px solid #4a89c9;
-        padding: 8px 14px;
-        font-family: "courier new", monospace;
-        z-index: 999;
-        animation: fadeout 3s forwards;
-        -webkit-animation: fadeout 3s forwards;
-      }
-      @keyframes fadeout {
-        0% {
-          opacity: 1;
-        }
-        80% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-    </style>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>hey.. im auth!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,440;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/main.css" />
   </head>
   <body>
-    <table class="main" cellspacing="0" cellpadding="0">
-      <tr>
-        <!-- thanks for prettier for making the code atleast slightly readable-->
-        <td>
-          <div class="marquee-wrap">
-            <span class="marquee-inner"
-              >welcome to my personal hellhole that i barely maintain! bleach
-              your eyeballs! bleach your eyeballs! bleach your eyeballs!
-            </span>
-          </div>
+    <canvas id="fractal"></canvas>
+    <div class="scrim"></div>
 
-          <h1>auth's homepage <span class="blink">*</span></h1>
-          <p style="text-align: center">
-            if you'd like to see my portfolio, please visit
-            <a href="portfolio.cloudlull.fyi">here</a>. (dead link for now)
+    <header class="mark">lovelyauth</header>
+
+    <nav class="rail" id="rail"></nav>
+
+    <div class="scroll-cue" id="cue">
+      <span class="line"></span><span>scroll!</span>
+    </div>
+
+    <main>
+      <section id="s-hero" class="align-left">
+        <div class="panel">
+          <p class="eyebrow"></p>
+          <h1 class="hero-title">
+            Building projects<br /><em>worth getting lost in.</em>
+          </h1>
+          <p class="body-text">
+            Hi, I'm auth! A transgender indie developer that likes tinkering
+            around with the web!
           </p>
+        </div>
+      </section>
 
-          <div class="divider">---------------------</div>
-          <h2>about me</h2>
-          <p>
-            hi, i am auth! i build games and other stuff usually solo! i am an
-            hobbyist active-ish linux contributor and i have no idea what
-            subsystem to stick with (but im interested in net and watchdog..) my
-            main project is auth's RNG. yes i tried to make this look oldweb
-            like and yes i am too much of a dumbass to represent the indie web
-            style.
+      <section id="s-rng" class="align-right">
+        <div class="panel">
+          <p class="eyebrow">my main project</p>
+          <h2 class="section-title">auth's RNG</h2>
+          <p class="lede">
+            A browser-based incremental game built almost entirely from scratch,
+            and the project I've lived in for a long minute!
           </p>
-          <p>
-            github:
-            <a href="https://github.com/authsrng-game">authsrng-game</a> /
-            <a href="https://github.com/auth1ery">auth1ery</a>
+          <p class="body-text">
+            It began as a RNG mechanic to one of my hobby ISS tracker sites,
+            which my friend liked, and then transformed into a full game. It
+            uses it's own RNG engine, has it's own database and backend,
+            accounts, backups, a lot more than you'd expect from a
+            gambling-esque web game!
           </p>
-
-          <hr />
-
-          <h2>my projects</h2>
-
-          <div class="tag">
-            <b>auth's RNG</b> browser-based incremental/gacha game!! 500+ named
-            rarities, custom animation dsl, its own theme editor,
-            accounts/social layer, the works and blahs!<br />
-            <a href="https://authsrng.xyz">authsrng.xyz</a> (stable) /
-            <a href="https://nightly.authsrng.xyz">nightly.authsrng.xyz</a>
-            (nightly) / android on
-            <a href="https://f-droid.org/en/packages/com.ivylopez.authsrng/"
-              >f-droid</a
+          <div class="links">
+            <a href="https://authsrng.xyz" target="_blank" rel="noopener"
+              >Play it: authsrng.xyz >></a
             >
-          </div>
-
-          <div class="tag">
-            <b>asterisk</b> custom chat platform built from scratch for auth's
-            rng but it failed horrendously. we dont talk about it.
-          </div>
-
-          <div class="tag">
-            <b>cupcake</b> singlefile-ish visual js node editor. we dont talk
-            about it.
-          </div>
-
-          <div id="hidden-panel" style="display: none">
-            <div class="tag">
-              you found epic!! here is auths rng for no reason (this most
-              definitely wont work because of web restrictions):<br />
-              <iframe
-                src="https://authsrng.xyz"
-                width="100%"
-                height="300"
-                style="border: 2px inset #a0c4e0; margin-top: 6px"
-              ></iframe>
-            </div>
-          </div>
-
-          <hr />
-
-          <h2>uses/setup</h2>
-          <div class="tag">
-            <b>os:</b> (arch linux but rebranded to bloom linux and with my own
-            dotfiles and stuff with hyprland okay this line is getting too
-            long)<br />
-            <b>editor:</b> (vscodium)<br />
-            <b>terminal:</b> (kitty)<br />
-            <b>shell:</b> (fish!)<br />
-            <b>keyboard:</b> (my laptop keyboard itself)<br />
-            <b>browser:</b> (helium)<br />
-            <b>daily driver lang:</b> (usually C or JS)
-          </div>
-
-          <hr />
-
-          <h2>linux kernel contributions</h2>
-          <p>current subsystems: watchdog, mm</p>
-          <p style="font-size: 12px; color: #6b93b2">
-            (patches below span a few other subsystems from earlier on)
-          </p>
-          <p>
-            ive atmost definitely may have pissed some kernel maintainers so bad
-            they dont want to read my patches again which is something im NOT
-            proud of by the way.. just wanted to pointed that out.
-          </p>
-          <ul>
-            <li>
-              f_midi2 use-after-free fix: landed!! in stable 7.2.5 and 6.18.51
-              and more
-            </li>
-            <li>
-              net/starfire ioaddr sign-extension fix v3: awaiting net-next
-            </li>
-            <li>risc-v hwprobe has_fpu() simplification: queued for v7.3-rc</li>
-            <li>
-              decompress_unxz cleanup: sitting in a maintainer's
-              mm-nonmm-unstable branch
-            </li>
-            <li>e1000e off-by-one fix.. thats all i got for this one</li>
-            <li>
-              ~9 more patches accepted upstream across various other subsystems
-            </li>
-            <li>
-              i review patches as well. i do full-time reviewer and part-time
-              contributor.
-            </li>
-          </ul>
-          <p style="font-size: 12px; color: #6b93b2">
-            (proof i am not lying:
             <a
-              href="https://lore.kernel.org/all/?q=skunkolee%40gmail.com"
+              href="https://github.com/authsrng-game/auths-RNG"
               target="_blank"
               rel="noopener"
-              >here</a
+              >Source on GitHub >></a
             >
-            if you want a live list instead of manual upkeep and also want to
-            see if im bullshitting or not! i do not maintain this list
-            frequently)
-          </p>
-          <hr />
-
-          <div style="text-align: center">
-            <a class="oldbutton" href="auth.atabook.org">sign my guestbook</a>
+            <a
+              href="https://discord.gg/mTDw8jJYqX"
+              target="_blank"
+              rel="noopener"
+              >Join the Discord server for it >></a
+            >
           </div>
+        </div>
+      </section>
 
+      <section id="s-asterisk" class="align-left">
+        <div class="panel">
+          <p class="eyebrow">my contributions</p>
+          <h2 class="section-title">Linux</h2>
+          <p class="lede">
+            I've contributed to the Linux kernel itself, and I mainly review
+            patches nowadays.
+          </p>
+          <p class="body-text">
+            I've had patches backported into stable kernels, such as
+            use-after-free fixes, basic one-liners like kfree ->
+            kfree_sensitive, or more complex patches. Again I mainly review
+            patches nowadays.
+          </p>
+        </div>
+        <div class="links">
+          <a
+            href="https://lore.kernel.org/all/?q=skunkolee%40gmail.com"
+            target="_blank"
+            rel="noopener"
+            >My lore >></a
+          >
+        </div>
+      </section>
+
+      <section id="s-cupcake" class="align-right">
+        <div class="panel">
+          <p class="eyebrow">my contributions pt.2</p>
+          <h2 class="section-title">Wikipedia</h2>
+          <p class="lede">
+            When I don't have the motivation to go through the hell of git
+            send-email.. I contribute to Wikipedia.
+          </p>
+          <p class="body-text">
+            I mainly fix tone, add links between articles, and occasionally if
+            I'm feeling spicy... add sources or citations! I don't really have
+            much to say other than that.
+          </p>
+          <div class="links">
+            <a
+              href="https://en.wikipedia.org/wiki/User:Lovelyauth"
+              target="_blank"
+              rel="noopener"
+              >My user page >></a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section id="s-systems" class="align-left">
+        <div class="panel">
+          <p class="eyebrow">other stuff! :)</p>
+          <h2 class="section-title">Further afield</h2>
+          <p class="body-text">
+            I have other projects that I work on from time to time, but they are
+            not as big or active as my main project(s).
+          </p>
+          <div class="worklist">
+            <div class="row">
+              <span class="name">Bloom</span
+              ><span class="desc"
+                >A personal opinionated Linux distribution, shaped around my own
+                workflow (I use it as of right now!)</span
+              >
+            </div>
+            <div class="row">
+              <span class="name">rngames</span
+              ><span class="desc"
+                >A directory for gacha/RNG webgames! I mostly made it because I
+                was sick of how scarce they are on the web.</span
+              >
+            </div>
+            <div class="row">
+              <span class="name">cupcake</span
+              ><span class="desc">
+                A visual JavaScript node editor which is really damn buggy...
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s-contact" class="align-center">
+        <div class="panel">
+          <p class="eyebrow">don't be scared... i don't bite!</p>
+          <h2 class="section-title">Let's talk.</h2>
+          <p class="body-text">
+            Whether it's about a project, a bug you found, or just want some
+            help on stuff, my inbox is open and I'm highly active!! I am not
+            currently looking for work as of right now.
+          </p>
+          <div class="links">
+            <a href="mailto:skunkolee@gmail.com">Email >></a>
+            <a href="https://github.com/auth1ery" target="_blank" rel="noopener"
+              >GitHub >></a
+            >
+            <a
+              href="https://discord.gg/mTDw8jJYqX"
+              target="_blank"
+              rel="noopener"
+            >
+              Discord >>
+            </a>
+            <a href="https://auth.atabook.org" target="_blank" rel="noopener">
+              Guestbook >>
+            </a>
+            <a href="http://internetometer.com/give/51832"
+              ><img
+                src="https://internetometer.com/image/51832.png"
+                alt="internetometer counter"
+                onload="
+                  document.getElementById(
+                    'internetometerStatus',
+                  ).style.display = 'none'
+                "
+                onerror="
+                  var s = document.getElementById('internetometerStatus');
+                  s.textContent = 'failed to load!';
+                  s.style.color = 'red';
+                "
+            /></a>
+            <iframe
+              src="//incr.easrng.net/badge?key=zx34wt45e"
+              style="background: url(//incr.easrng.net/bg.gif)"
+              title="increment badge"
+              width="88"
+              height="31"
+              frameborder="0"
+              onload="
+                document.getElementById('incrBadgeStatus').style.display =
+                  'none'
+              "
+              onerror="
+                var s = document.getElementById('incrBadgeStatus');
+                s.textContent = 'failed to load!';
+                s.style.color = 'red';
+              "
+            ></iframe>
+          </div>
           <br />
+          <span class="widget-status" id="tamanotchiStatus">(loading...)</span>
+          <a href="https://tamanotchi.world/29830c"
+            ><img
+              src="https://tamanotchi.world/i/29830"
+              alt="It's tamaNOTchi! Click to feed!"
+              loading="lazy"
+              onload="
+                document.getElementById('tamanotchiStatus').style.display =
+                  'none'
+              "
+              onerror="
+                var s = document.getElementById('tamanotchiStatus');
+                s.textContent = 'failed to load!';
+                s.style.color = 'red';
+              "
+          /></a>
+        </div>
+      </section>
+    </main>
 
-          <div class="tag" id="lanyard-tag">
-            <b>discord now:</b> <span id="lanyard-status">loading...</span>
-          </div>
+    <footer>
+      <span>ivy lopez, 2026</span>
+    </footer>
 
-          <script>
-            (function () {
-              const DISCORD_ID = "1227759305852190801";
-              const el = document.getElementById("lanyard-status");
-
-              function render(data) {
-                if (!data) {
-                  el.textContent = "couldn't fetch status :(";
-                  return;
-                }
-                const activity =
-                  data.activities.find((a) => a.type === 2) || // type 2 = listening (Spotify)
-                  data.activities.find((a) => a.type === 0); // type 0 = playing
-
-                let text = `${data.discord_status}`;
-                if (data.listening_to_spotify && data.spotify) {
-                  text += ` > listening to "${data.spotify.song}" by ${data.spotify.artist}`;
-                } else if (activity) {
-                  text += ` > playing ${activity.name}`;
-                }
-                el.textContent = text;
-              }
-
-              // initial fetch
-              fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
-                .then((r) => r.json())
-                .then((res) => render(res.data))
-                .catch(() => (el.textContent = "offline / api down!!"));
-
-              const ws = new WebSocket("wss://api.lanyard.rest/socket");
-              ws.onopen = () => {
-                ws.send(
-                  JSON.stringify({ op: 2, d: { subscribe_to_id: DISCORD_ID } }),
-                );
-              };
-              ws.onmessage = (event) => {
-                const msg = JSON.parse(event.data);
-                if (msg.t === "INIT_STATE" || msg.t === "PRESENCE_UPDATE") {
-                  render(msg.d);
-                }
-              };
-            })();
-          </script>
-
-          <p style="text-align: center; margin-top: 20px">
-            you are visitor number
-            <script
-              type="text/javascript"
-              src="https://counter.websiteout.com/js/13/0/0/1"
-            ></script>
-          </p>
-
-          <p style="text-align: center">
-            join my epic
-            <a href="https://discord.gg/mTDw8jJYqX">discord server!</a>
-          </p>
-
-          <p style="text-align: center">
-            <a href="https://github.com/auth1ery/epicpersonalsite">source</a>
-          </p>
-
-          <p class="sig">"Believe you can and you're halfway there."</p>
-        </td>
-      </tr>
-    </table>
-    <script>
-      (function () {
-        var konami = [
-          "ArrowUp",
-          "ArrowUp",
-          "ArrowDown",
-          "ArrowDown",
-          "ArrowLeft",
-          "ArrowRight",
-          "ArrowLeft",
-          "ArrowRight",
-          "b",
-          "a",
-        ];
-        let konamiPos = 0;
-
-        window.addEventListener("keydown", function (e) {
-          konamiPos = e.key === konami[konamiPos] ? konamiPos + 1 : 0;
-          if (konamiPos === konami.length) {
-            konamiPos = 0;
-            dropToast("fuck you the konami code wont work here!!!!!!");
-            document.body.classList.add("rare-bg");
-            setTimeout(function () {
-              document.body.classList.remove("rare-bg");
-            }, 4000);
-          }
-        });
-
-        function dropToast(text) {
-          const toast = document.createElement("div");
-          toast.className = "egg-toast";
-          toast.textContent = text;
-          document.body.appendChild(toast);
-          setTimeout(function () {
-            toast.remove();
-          }, 3000);
-        }
-
-        const star = document.querySelector(".blink");
-        let starClicks = 0;
-        if (star) {
-          star.style.cursor = "pointer";
-          star.addEventListener("click", function () {
-            starClicks++;
-            if (starClicks === 5) {
-              const hidden = document.getElementById("hidden-panel");
-              if (hidden) hidden.style.display = "block";
-            }
-          });
-        }
-      })();
-    </script>
+    <script src="src/main.js"></script>
   </body>
 </html>
