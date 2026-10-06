@@ -38,6 +38,22 @@
             Hi, I'm auth! A transgender indie developer that likes tinkering
             around with the web!
           </p>
+          <div class="button-box">
+            <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
+              <img
+                src="src/assets/button.gif"
+                width="88"
+                height="31"
+                alt="auth's button"
+              />
+            </a>
+            <details>
+              <summary>steal this</summary>
+              <textarea readonly rows="3" onclick="this.select()">
+&lt;a href="https://auth.cloudlull.fyi"&gt;&lt;img src="https://auth.cloudlull.fyi/src/assets/button.gif" width="88" height="31" alt="auth"&gt;&lt;/a&gt;</textarea
+              >
+            </details>
+          </div>
         </div>
       </section>
 
@@ -215,6 +231,10 @@
               "
             ></iframe>
           </div>
+          <div class="presence" id="presence" hidden>
+            <span class="pdot"></span><span class="ptxt"></span>
+          </div>
+          <br />
           <br />
           <span class="widget-status" id="tamanotchiStatus">(loading...)</span>
           <a href="https://tamanotchi.world/29830c"
@@ -237,9 +257,43 @@
     </main>
 
     <footer>
-      <span>ivy lopez, 2026</span>
+      <span>ivy lopez, 2026, do not distribute!</span>
     </footer>
 
+    <div class="readout" id="readout"></div>
+    <div class="dock" id="dock">
+      <div class="tools" id="tools" hidden>
+        <button id="t-mode">julia here</button>
+        <button id="t-in">+</button>
+        <button id="t-out">-</button>
+        <button id="t-home">reset</button>
+        <label
+          >detail
+          <input
+            type="range"
+            id="t-iter"
+            min="60"
+            max="1500"
+            step="20"
+            value="260"
+        /></label>
+        <label
+          >bands
+          <input
+            type="range"
+            id="t-bands"
+            min="1"
+            max="12"
+            step="0.5"
+            value="1"
+        /></label>
+      </div>
+      <div class="row">
+        <button id="btn-save">save view</button>
+        <button id="btn-explore">explore</button>
+      </div>
+    </div>
+    
     <script src="src/main.js"></script>
   </body>
 </html>
