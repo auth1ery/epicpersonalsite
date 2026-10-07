@@ -172,7 +172,7 @@
 
     L.push("we shall meet again, stranger.");
     L.push({
-      text: "inspired from yhvr.me's about you section which is inspired from tom from the internet's little gizmo that he used to have on this site..",
+      text: "inspired from yhvr.me's about you section which is inspired from tom from the internet's little gizmo that he used to have on his site..",
       small: true,
     });
     return L;
