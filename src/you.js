@@ -171,6 +171,10 @@
     }
 
     L.push("we shall meet again, stranger.");
+    L.push({
+      text: "inspired from yhvr.me's about you section which is inspired from tom from the internet's little gizmo that he used to have on this site..",
+      small: true,
+    });
     return L;
   }
 
@@ -202,11 +206,19 @@
       if (mine !== token) return;
       const p = document.createElement("p");
       if (i === 0) p.className = "first";
-      p.textContent = lines[i];
+      p.textContent = typeof lines[i] === "string" ? lines[i] : lines[i].text;
+      if (typeof lines[i] !== "string" && lines[i].small) {
+        p.classList.add("small");
+      }
       box.append(p);
       requestAnimationFrame(() => p.classList.add("in"));
-      p.scrollIntoView({ block: "end", behavior: reduced ? "auto" : "smooth" });
-      if (!reduced) await wait(1600 + lines[i].length * 50);
+      p.scrollIntoView({
+        block: "end",
+        behavior: reduced ? "auto" : "smooth",
+      });
+      const text = typeof lines[i] === "string" ? lines[i] : lines[i].text;
+
+      if (!reduced) await wait(1600 + text.length * 50);
     }
   }
 

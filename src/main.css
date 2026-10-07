@@ -653,3 +653,7 @@ html.exploring .cur-ring.down {
     transition: none;
   }
 }
+
+.you p.small {
+  font-size: 0.7em;
+}
