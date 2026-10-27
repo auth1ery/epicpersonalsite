@@ -2,303 +2,263 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>hey.. im auth!</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,440;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="/src/main.css" />
     <link rel="icon" href="/woawfavicon.ico" type="image/x-icon" />
   </head>
   <body>
-    <canvas id="fractal"></canvas>
-    <div class="scrim"></div>
-
-    <header class="mark">lovelyauth</header>
-
-    <nav class="rail" id="rail"></nav>
-
-    <div class="scroll-cue" id="cue">
-      <span class="line"></span><span>scroll!</span>
-    </div>
+    <header>
+      <span class="mark">lovelyauth</span>
+      <nav>
+        <a href="#rng">[rng]</a>
+        <a href="#linux">[linux]</a>
+        <a href="#wikipedia">[wikipedia]</a>
+        <a href="#other">[other]</a>
+        <a href="#contact">[contact]</a>
+        <a href="/notes/">[notes]</a>
+      </nav>
+    </header>
 
     <main>
-      <section id="s-hero" class="align-left">
-        <div class="panel">
-          <p class="eyebrow"></p>
-          <h1 class="hero-title">
-            Building projects<br /><em>worth getting lost in.</em>
-          </h1>
-          <p class="body-text">
-            Hi, I'm auth! A transgender lesbian indie developer that likes tinkering
-            around with the web! I like fractals and obviously programming weird
-            stuff.
-          </p>
-          <div class="button-box">
-            <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
-              <img
-                src="src/assets/button.gif"
-                width="88"
-                height="31"
-                alt="auth's button"
-              />
-            </a>
-            <details>
-              <summary>steal this</summary>
-              <textarea readonly rows="3" onclick="this.select()">
-&lt;a href="https://auth.cloudlull.fyi"&gt;&lt;img src="https://auth.cloudlull.fyi/src/assets/button.gif" width="88" height="31" alt="auth"&gt;&lt;/a&gt;</textarea
-              >
-            </details>
-          </div>
-        </div>
-      </section>
-
-      <section id="s-rng" class="align-right">
-        <div class="panel">
-          <p class="eyebrow">my main project</p>
-          <h2 class="section-title">auth's RNG</h2>
-          <p class="lede">
-            A browser-based incremental game built almost entirely from scratch,
-            and the project I've lived in for a long minute!
-          </p>
-          <p class="body-text">
-            It began as a RNG mechanic to one of my hobby ISS tracker sites,
-            which my friend liked, and then transformed into a full game. It
-            uses it's own RNG engine, has it's own database and backend,
-            accounts, backups, a lot more than you'd expect from a
-            gambling-esque web game!
-          </p>
+      <h1>Programming weird stuff</h1>
+      <p>
+        I am auth and I like to auth around! I can't say much about who I am really, there's not much to me anyways.
+      </p>
+      <div class="button-box">
+        <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
           <img
-            src="src/assets/authsrng.gif"
-            alt="spinning cube of auth's RNG logo"
+            src="src/assets/button.gif"
+            width="88"
+            height="31"
+            alt="auth's button"
           />
-          <div class="links">
+        </a>
+        <details>
+          <summary>steal this</summary>
+          <textarea readonly rows="3" onclick="this.select()">
+&lt;a href="https://auth.cloudlull.fyi"&gt;&lt;img src="https://auth.cloudlull.fyi/src/assets/button.gif" width="88" height="31" alt="auth"&gt;&lt;/a&gt;</textarea
+          >
+        </details>
+      </div>
+
+      <hr />
+
+      <section id="rng">
+        <p class="dim">my main project</p>
+        <h2>auth's RNG</h2>
+        <p>
+          A browser-based incremental game built almost entirely from scratch,
+          and the project I've lived in for a long minute!
+        </p>
+        <p>
+          It began as a RNG mechanic to one of my hobby ISS tracker sites,
+          which my friend liked, and then transformed into a full game. It uses
+          it's own RNG engine, has it's own database and backend, accounts,
+          backups, a lot more than you'd expect from a gambling-esque web game!
+        </p>
+        <img
+          src="src/assets/authsrng.gif"
+          alt="spinning cube of auth's RNG logo"
+        />
+        <ul class="links">
+          <li>
             <a href="https://authsrng.xyz" target="_blank" rel="noopener"
               >Play it: authsrng.xyz >></a
             >
+          </li>
+          <li>
             <a
               href="https://github.com/authsrng-game/auths-RNG"
               target="_blank"
               rel="noopener"
               >Source on GitHub >></a
             >
+          </li>
+          <li>
             <a
               href="https://discord.gg/mTDw8jJYqX"
               target="_blank"
               rel="noopener"
               >Join the Discord server for it >></a
             >
-          </div>
-        </div>
+          </li>
+        </ul>
       </section>
 
-      <section id="s-asterisk" class="align-left">
-        <div class="panel">
-          <p class="eyebrow">my contributions</p>
-          <h2 class="section-title">Linux</h2>
-          <p class="lede">I've contributed to the Linux kernel itself!</p>
-          <p class="body-text">
-            I've had patches backported into stable kernels, such as
-            use-after-free fixes, basic one-liners like kfree ->
-            kfree_sensitive, or more complex patches. I mainly review patches
-            nowadays.
-          </p>
-        </div>
-        <div class="links">
-          <a
-            href="https://lore.kernel.org/all/?q=skunkolee%40gmail.com"
-            target="_blank"
-            rel="noopener"
-            >My lore >></a
-          >
-        </div>
+      <hr />
+
+      <section id="linux">
+        <p class="dim">my contributions</p>
+        <h2>Linux</h2>
+        <p>I've contributed to the Linux kernel itself!</p>
+        <p>
+          I've had patches backported into stable kernels, such as
+          use-after-free fixes, basic one-liners like kfree ->
+          kfree_sensitive, or more complex patches. I mainly review patches
+          nowadays.
+        </p>
+        <ul class="links">
+          <li>
+            <a
+              href="https://lore.kernel.org/all/?q=skunkolee%40gmail.com"
+              target="_blank"
+              rel="noopener"
+              >My lore >></a
+            >
+          </li>
+        </ul>
       </section>
 
-      <section id="s-cupcake" class="align-right">
-        <div class="panel">
-          <p class="eyebrow">my contributions pt.2</p>
-          <h2 class="section-title">Wikipedia</h2>
-          <p class="lede">
-            When I don't have the motivation to go through the hell of git
-            send-email.. I contribute to Wikipedia.
-          </p>
-          <p class="body-text">
-            I mainly fix tone, add links between articles, and occasionally if
-            I'm feeling spicy... add sources or citations! I don't really have
-            much to say other than that.
-          </p>
-          <img src="src/assets/terry.gif" alt="terry" />
-          <div class="links">
+      <hr />
+
+      <section id="wikipedia">
+        <p class="dim">my contributions pt.2</p>
+        <h2>Wikipedia</h2>
+        <p>
+          When I don't have the motivation to go through the hell of git
+          send-email.. I contribute to Wikipedia.
+        </p>
+        <p>
+          I mainly fix tone, add links between articles, and occasionally if
+          I'm feeling spicy... add sources or citations! I don't really have
+          much to say other than that.
+        </p>
+        <img src="src/assets/terry.gif" alt="terry" />
+        <ul class="links">
+          <li>
             <a
               href="https://en.wikipedia.org/wiki/User:Lovelyauth"
               target="_blank"
               rel="noopener"
               >My user page >></a
             >
-          </div>
-        </div>
+          </li>
+        </ul>
       </section>
 
-      <section id="s-systems" class="align-left">
-        <div class="panel">
-          <p class="eyebrow">other stuff! :)</p>
-          <h2 class="section-title">Further afield</h2>
-          <p class="body-text">
-            I have other projects that I work on from time to time, but they are
-            not as big or active as my main project(s).
-          </p>
-          <div class="worklist">
-            <div class="row">
-              <span class="name">Bloom</span
-              ><span class="desc"
-                >A personal opinionated Linux distribution, shaped around my own
-                workflow (I use it as of right now!)</span
-              >
-            </div>
-            <div class="row">
-              <span class="name">rngames</span
-              ><span class="desc"
-                >A directory for gacha/RNG webgames! I mostly made it because I
-                was sick of how scarce they are on the web.</span
-              >
-            </div>
-            <div class="row">
-              <span class="name">cupcake</span
-              ><span class="desc">
-                A visual JavaScript node editor which is really damn buggy...
-              </span>
-            </div>
-          </div>
-        </div>
+      <hr />
+
+      <section id="other">
+        <p class="dim">other stuff! :)</p>
+        <h2>Further afield</h2>
+        <p>
+          I have other projects that I work on from time to time, but they are
+          not as big or active as my main project(s).
+        </p>
+        <dl>
+          <dt>Bloom</dt>
+          <dd>
+            A personal opinionated Linux distribution, shaped around my own
+            workflow (I use it as of right now!)
+          </dd>
+          <dt>rngames</dt>
+          <dd>
+            A directory for gacha/RNG webgames! I mostly made it because I was
+            sick of how scarce they are on the web.
+          </dd>
+          <dt>cupcake</dt>
+          <dd>A visual JavaScript node editor which is really damn buggy...</dd>
+        </dl>
       </section>
 
-      <section id="s-contact" class="align-center">
-        <div class="panel">
-          <p class="eyebrow">don't be scared... i don't bite!</p>
-          <h2 class="section-title">Let's talk.</h2>
-          <p class="body-text">
-            Whether it's about a project, a bug you found, or just want some
-            help on stuff, my inbox is open and I'm highly active!! I am not
-            currently looking for work as of right now.
-          </p>
-          <div class="links">
-            <a href="mailto:skunkolee@gmail.com">Email >></a>
+      <hr />
+
+      <section id="contact">
+        <p class="dim">don't be scared... i don't bite!</p>
+        <h2>Let's talk.</h2>
+        <p>
+          Whether it's about a project, a bug you found, or just want some help
+          on stuff, my inbox is open and I'm highly active!! I am not currently
+          looking for work as of right now.
+        </p>
+        <ul class="links">
+          <li><a href="mailto:skunkolee@gmail.com">Email >></a></li>
+          <li>
             <a href="https://github.com/auth1ery" target="_blank" rel="noopener"
               >GitHub >></a
             >
+          </li>
+          <li>
             <a
               href="https://discord.gg/mTDw8jJYqX"
               target="_blank"
               rel="noopener"
+              >Discord >></a
             >
-              Discord >>
-            </a>
-            <a href="https://auth.atabook.org" target="_blank" rel="noopener">
-              Guestbook >>
-            </a>
-            <a href="/notes/">Notes >></a>
-            <a href="http://internetometer.com/give/51832"
-              ><img
-                src="https://internetometer.com/image/51832.png"
-                alt="internetometer counter"
-                onload="
-                  document.getElementById(
-                    'internetometerStatus',
-                  ).style.display = 'none'
-                "
-                onerror="
-                  var s = document.getElementById('internetometerStatus');
-                  s.textContent = 'failed to load!';
-                  s.style.color = 'red';
-                "
-            /></a>
-            <iframe
-              src="//incr.easrng.net/badge?key=zx34wt45e"
-              style="background: url(//incr.easrng.net/bg.gif)"
-              title="increment badge"
-              width="88"
-              height="31"
-              frameborder="0"
-              onload="
-                document.getElementById('incrBadgeStatus').style.display =
-                  'none'
-              "
-              onerror="
-                var s = document.getElementById('incrBadgeStatus');
-                s.textContent = 'failed to load!';
-                s.style.color = 'red';
-              "
-            ></iframe>
-          </div>
-          <div class="presence" id="presence" hidden>
-            <span class="pdot"></span><span class="ptxt"></span>
-          </div>
-          <br />
-          <br />
-          <span class="widget-status" id="tamanotchiStatus">(loading...)</span>
-          <a href="https://tamanotchi.world/29830c"
+          </li>
+          <li>
+            <a href="https://auth.atabook.org" target="_blank" rel="noopener"
+              >Guestbook >></a
+            >
+          </li>
+          <li><a href="/notes/">Notes >></a></li>
+        </ul>
+
+        <hr>
+        <h1>stupid internet widgets</h1>
+
+        <div class="presence" id="presence" hidden>
+          <span class="pdot"></span><span class="ptxt"></span>
+        </div>
+
+        <div class="badges">
+          <a href="http://internetometer.com/give/51832"
             ><img
-              src="https://tamanotchi.world/i/29830"
-              alt="It's tamaNOTchi! Click to feed!"
-              loading="lazy"
+              src="https://internetometer.com/image/51832.png"
+              alt="internetometer counter"
               onload="
-                document.getElementById('tamanotchiStatus').style.display =
+                document.getElementById('internetometerStatus').style.display =
                   'none'
               "
               onerror="
-                var s = document.getElementById('tamanotchiStatus');
+                var s = document.getElementById('internetometerStatus');
                 s.textContent = 'failed to load!';
                 s.style.color = 'red';
               "
           /></a>
+          <span id="internetometerStatus"></span>
+          <iframe
+            src="//incr.easrng.net/badge?key=zx34wt45e"
+            style="background: url(//incr.easrng.net/bg.gif)"
+            title="increment badge"
+            width="88"
+            height="31"
+            frameborder="0"
+            onload="
+              document.getElementById('incrBadgeStatus').style.display = 'none'
+            "
+            onerror="
+              var s = document.getElementById('incrBadgeStatus');
+              s.textContent = 'failed to load!';
+              s.style.color = 'red';
+            "
+          ></iframe>
+          <span id="incrBadgeStatus"></span>
         </div>
+
+        <span class="widget-status" id="tamanotchiStatus">(loading...)</span>
+        <a href="https://tamanotchi.world/29830c"
+          ><img
+            src="https://tamanotchi.world/i/29830"
+            alt="It's tamaNOTchi! Click to feed!"
+            loading="lazy"
+            onload="
+              document.getElementById('tamanotchiStatus').style.display = 'none'
+            "
+            onerror="
+              var s = document.getElementById('tamanotchiStatus');
+              s.textContent = 'failed to load!';
+              s.style.color = 'red';
+            "
+        /></a>
       </section>
     </main>
 
     <footer>
       <span>ivy lopez, 2026, do not distribute!</span>
-      <button id="you-btn" class="you-btn">about you</button>
+      <button id="you-btn">about you</button>
     </footer>
-
-    <div class="readout" id="readout"></div>
-    <div class="dock" id="dock">
-      <div class="tools" id="tools" hidden>
-        <button id="t-mode">julia here</button>
-        <button id="t-in">+</button>
-        <button id="t-out">-</button>
-        <button id="t-home">reset</button>
-        <label
-          >detail
-          <input
-            type="range"
-            id="t-iter"
-            min="60"
-            max="1500"
-            step="20"
-            value="260"
-        /></label>
-        <label
-          >bands
-          <input
-            type="range"
-            id="t-bands"
-            min="1"
-            max="12"
-            step="0.5"
-            value="1"
-        /></label>
-      </div>
-      <div class="row">
-        <button id="btn-save">save view</button>
-        <button id="btn-explore">explore</button>
-      </div>
-    </div>
 
     <script src="src/main.js"></script>
     <script src="src/you.js"></script>

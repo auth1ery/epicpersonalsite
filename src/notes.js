@@ -8,7 +8,7 @@
     return d.innerHTML;
   }
 
-  function list() {
+  function stupidFuckingList() {
     document.title = "notes";
     view.innerHTML =
       "<h1>notes</h1>" +
@@ -42,7 +42,7 @@
     const id = location.hash.slice(1);
     const p = posts.find((x) => x.id === id);
     if (p) show(p);
-    else list();
+    else stupidFuckingList();
   }
 
   fetch("/notes/posts.json")

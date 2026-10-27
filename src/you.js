@@ -8,10 +8,7 @@
   root.hidden = true;
   root.innerHTML =
     '<div class="ylines"></div><button class="yclose">close</button>';
-  const hint = document.createElement("div");
-  hint.className = "you-hint";
-  hint.textContent = "keep going";
-  document.body.append(root, hint);
+  document.body.append(root);
   const box = root.querySelector(".ylines");
 
   const ua = navigator.userAgent;
@@ -86,12 +83,12 @@
         "it's running on intel integrated graphics, and you don't fuss about it.",
       );
     } else if (/nvidia|geforce|rtx|gtx|radeon/i.test(g)) {
-      L.push("there's a dedicated gpu in there. nice.");
+      L.push("there's a dedicated gpu in there. nice. you're richer than me.");
     } else if (/apple/i.test(g)) {
-      L.push("apple silicon, if the graphics string is honest.");
+      L.push("apple silicon, if the graphics string is honest. #opensourceapple");
     } else if (/adreno|mali/i.test(g)) {
       L.push(
-        "a phone gpu, which has no business rendering a mandelbrot set this smoothly.",
+        "a phone gpu, gulp! nothing wrong with it, it just isn't as good.",
       );
     }
 
@@ -248,51 +245,4 @@
       if (skip) skip();
     }
   });
-
-  let acc = 0;
-  let decay = 0;
-  function atEnd() {
-    return (
-      !document.documentElement.classList.contains("exploring") &&
-      innerHeight + scrollY >= document.documentElement.scrollHeight - 2
-    );
-  }
-  function push(d) {
-    if (isOpen) return;
-    if (!atEnd() || d <= 0) {
-      acc = 0;
-      hint.style.opacity = "0";
-      return;
-    }
-    acc += d;
-    hint.style.opacity = String(Math.min(1, acc / 450));
-    clearTimeout(decay);
-    decay = setTimeout(() => {
-      acc = 0;
-      hint.style.opacity = "0";
-    }, 700);
-    if (acc > 450) {
-      acc = 0;
-      hint.style.opacity = "0";
-      open();
-    }
-  }
-  addEventListener("wheel", (e) => push(e.deltaY), { passive: true });
-  let ty = 0;
-  addEventListener(
-    "touchstart",
-    (e) => {
-      ty = e.touches[0].clientY;
-    },
-    { passive: true },
-  );
-  addEventListener(
-    "touchmove",
-    (e) => {
-      const y = e.touches[0].clientY;
-      push((ty - y) * 2);
-      ty = y;
-    },
-    { passive: true },
-  );
 })();
