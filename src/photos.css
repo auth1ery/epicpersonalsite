@@ -1,0 +1,43 @@
+.folder {
+  display: block;
+  padding: 0.25em 0;
+}
+.folder .count {
+  color: #888;
+  margin-left: 2ch;
+}
+.folder:hover .count {
+  background: #03c;
+  color: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1em;
+  margin: 1em 0;
+}
+.grid figure {
+  margin: 0;
+}
+.grid a {
+  display: block;
+}
+.grid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid #666;
+}
+.grid a:hover img {
+  border-color: #fff;
+}
+.grid figcaption {
+  color: #888;
+  font-size: 80%;
+  margin-top: 0.25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "id": "clouds",
+      "photos": [
+        "clouds1.jpg",
+        "clouds2.jpg",
+        "clouds3.jpg"
+      ]
+    },
+    {
+      "id": "sunsets",
+      "photos": [
+        "sunset1.jpg",
+        "sunset2.jpg"
+      ]
+    }
+  ]
+}
