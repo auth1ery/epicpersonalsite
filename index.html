@@ -49,6 +49,12 @@
         <a href="photographs.html">me doing photography as a hobby</a> and
         obviously.. programming!
       </p>
+      <p>
+        this site was mostly made for browser but it still works flawlessly on
+        mobile! just a few weird nitpicks here and there
+      </p>
+      <div id="auth-clock" class="dstats">...</div>
+      <br />
       <div class="button-box">
         <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
           <img
@@ -608,6 +614,85 @@
         document.addEventListener("visibilitychange", () => {
           if (!document.hidden) loadStats();
         });
+      })();
+    </script>
+
+    <script>
+      (() => {
+        const box = document.getElementById("auth-clock");
+        const TZ = "America/Edmonton";
+        const SYNODIC = 29.530588853;
+        const REF = Date.UTC(2000, 0, 6, 18, 14); // a known new moon
+
+        const moons = [
+          ["🌑", "new moon ."],
+          ["🌒", "waxing crescent"],
+          ["🌓", "first quarter"],
+          ["🌔", "waxing gibbous"],
+          ["🌕", "full moon !"],
+          ["🌖", "waning gibbous"],
+          ["🌗", "last quarter"],
+          ["🌘", "waning crescent"],
+        ];
+
+        const timeFmt = new Intl.DateTimeFormat("en-US", {
+          timeZone: TZ,
+          weekday: "short",
+          hour: "numeric",
+          minute: "2-digit",
+          timeZoneName: "short",
+        });
+        const hourFmt = new Intl.DateTimeFormat("en-US", {
+          timeZone: TZ,
+          hour: "numeric",
+          hourCycle: "h23",
+        });
+
+        const dayPart = (h) =>
+          h < 5
+            ? "midnight"
+            : h < 8
+              ? "dawn"
+              : h < 12
+                ? "morning"
+                : h < 17
+                  ? "afternoon"
+                  : h < 21
+                    ? "evening"
+                    : "night";
+
+        function update() {
+          const now = new Date();
+          const hour = parseInt(hourFmt.format(now), 10);
+
+          const age =
+            ((((now - REF) / 86400000) % SYNODIC) + SYNODIC) % SYNODIC;
+          const frac = age / SYNODIC;
+          const [icon, name] = moons[Math.floor(frac * 8 + 0.5) % 8];
+          const lit = Math.round(
+            ((1 - Math.cos(2 * Math.PI * frac)) / 2) * 100,
+          );
+
+          const frag = document.createDocumentFragment();
+          const row = (label, value) => {
+            const d = document.createElement("div");
+            d.className = "row";
+            const l = document.createElement("span");
+            l.className = "label";
+            l.textContent = label;
+            const v = document.createElement("span");
+            v.textContent = value;
+            d.append(l, v);
+            frag.appendChild(d);
+          };
+
+          row("my time", `${timeFmt.format(now)} (${dayPart(hour)})`);
+          row("da moon", `${icon} ${name}, ${lit}% lit`);
+          box.replaceChildren(frag);
+        }
+
+        update();
+        setInterval(update, 30000);
       })();
     </script>
 
