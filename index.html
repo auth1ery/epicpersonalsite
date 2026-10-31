@@ -49,126 +49,6 @@
         <a href="photographs.html">me doing photography as a hobby</a> and
         obviously.. programming!
       </p>
-      <div id="dingus-stats" class="dstats">dingus: checking...</div>
-
-      <style>
-        .dstats {
-          font-family: monospace;
-        }
-        .dstats .row {
-          display: flex;
-          gap: 0.75em;
-        }
-        .dstats .label {
-          opacity: 0.6;
-          min-width: 8em;
-        }
-        .dstats .patches {
-          margin-top: 0.75em;
-        }
-        .dstats .patches a {
-          display: block;
-        }
-      </style>
-
-      <script>
-        (() => {
-          const box = document.getElementById("dingus-stats");
-          const gb = (n) => (n / 1024 ** 3).toFixed(1);
-          const ago = (ms) => {
-            const m = Math.floor((Date.now() - ms) / 60000);
-            if (m < 60) return `${m}m ago`;
-            if (m < 1440) return `${Math.floor(m / 60)}h ago`;
-            return `${Math.floor(m / 1440)}d ago`;
-          };
-
-          function render(s) {
-            const frag = document.createDocumentFragment();
-            const row = (label, value) => {
-              const d = document.createElement("div");
-              d.className = "row";
-              const l = document.createElement("span");
-              l.className = "label";
-              l.textContent = label;
-              const v = document.createElement("span");
-              v.textContent = value;
-              d.append(l, v);
-              frag.appendChild(d);
-            };
-
-            const days = Math.floor(s.uptime / 86400);
-            const hours = Math.floor((s.uptime % 86400) / 3600);
-            const up = s.services.filter((x) => x.status === "online").length;
-
-            row("status", "dingus is alive!!!!");
-            row("kernel", `linux ${s.kernel}`);
-            row("uptime", `${days}d ${hours}h`);
-            row("load", s.load.map((n) => n.toFixed(2)).join(" "));
-            row("memory", `${gb(s.mem.used)} / ${gb(s.mem.total)} GB`);
-            row("services", `${up}/${s.services.length} online`);
-
-            if (s.game && s.game.accounts) {
-              row("players", `${s.game.accounts} registered`);
-              row("active today", String(s.game.activeToday));
-            }
-            if (s.disk)
-              row("disk", `${gb(s.disk.used)} / ${gb(s.disk.total)} GB`);
-            if (s.temp !== null && s.temp !== undefined)
-              row("cpu temp", `${s.temp} C`);
-            if (s.net)
-              row(
-                "network",
-                `down ${gb(s.net.rx)} GB, up ${gb(s.net.tx)} GB since boot`,
-              );
-            if (s.backup) row("last backup", ago(s.backup));
-
-            if (Array.isArray(s.patches) && s.patches.length) {
-              const wrap = document.createElement("div");
-              wrap.className = "patches";
-              const h = document.createElement("div");
-              h.className = "label";
-              h.textContent = "latest patches";
-              wrap.appendChild(h);
-              for (const p of s.patches) {
-                if (
-                  typeof p.link !== "string" ||
-                  !p.link.startsWith("https://lore.kernel.org/")
-                )
-                  continue;
-                const a = document.createElement("a");
-                a.href = p.link;
-                a.target = "_blank";
-                a.rel = "noopener";
-                a.textContent = `${String(p.date).slice(0, 10)}  ${p.title}`;
-                wrap.appendChild(a);
-              }
-              frag.appendChild(wrap);
-            }
-
-            box.replaceChildren(frag);
-          }
-
-          async function loadStats() {
-            try {
-              const r = await fetch("https://stats.authsrng.xyz/", {
-                cache: "no-store",
-              });
-              if (!r.ok) throw new Error("bad status");
-              render(await r.json());
-            } catch {
-              box.textContent = "dingus is napping (offline)";
-            }
-          }
-
-          loadStats();
-          setInterval(() => {
-            if (!document.hidden) loadStats();
-          }, 30000);
-          document.addEventListener("visibilitychange", () => {
-            if (!document.hidden) loadStats();
-          });
-        })();
-      </script>
       <br />
       <div class="button-box">
         <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
@@ -229,6 +109,7 @@
             >
           </li>
         </ul>
+        <div id="dingus-stats" class="dstats">dingus: checking...</div>
       </section>
 
       <hr />
@@ -252,6 +133,7 @@
             >
           </li>
         </ul>
+        <div id="dingus-patches" class="dstats">loading patches...</div>
       </section>
 
       <hr />
@@ -604,6 +486,131 @@
       <a href="https://github.com/auth1ery/epicpersonalsite">source</a>
       <button id="you-btn">about you</button>
     </footer>
+
+    <style>
+      .dstats {
+        font-family: monospace;
+        margin-top: 0.75em;
+      }
+      .dstats .row {
+        display: flex;
+        gap: 0.75em;
+      }
+      .dstats .label {
+        opacity: 0.6;
+        min-width: 8em;
+      }
+      .dstats a {
+        display: block;
+      }
+    </style>
+
+    <script>
+      (() => {
+        const statsBox = document.getElementById("dingus-stats");
+        const patchBox = document.getElementById("dingus-patches");
+        const gb = (n) => (n / 1024 ** 3).toFixed(1);
+        const ago = (ms) => {
+          const m = Math.floor((Date.now() - ms) / 60000);
+          if (m < 60) return `${m}m ago`;
+          if (m < 1440) return `${Math.floor(m / 60)}h ago`;
+          return `${Math.floor(m / 1440)}d ago`;
+        };
+
+        function renderStats(s) {
+          const frag = document.createDocumentFragment();
+          const row = (label, value) => {
+            const d = document.createElement("div");
+            d.className = "row";
+            const l = document.createElement("span");
+            l.className = "label";
+            l.textContent = label;
+            const v = document.createElement("span");
+            v.textContent = value;
+            d.append(l, v);
+            frag.appendChild(d);
+          };
+
+          const days = Math.floor(s.uptime / 86400);
+          const hours = Math.floor((s.uptime % 86400) / 3600);
+          const up = s.services.filter((x) => x.status === "online").length;
+
+          row("status", "dingus is alive!!!!");
+          row("kernel", `linux ${s.kernel}`);
+          row("uptime", `${days}d ${hours}h`);
+          row("load", s.load.map((n) => n.toFixed(2)).join(" "));
+          row("memory", `${gb(s.mem.used)} / ${gb(s.mem.total)} GB`);
+          row("services", `${up}/${s.services.length} online`);
+
+          if (s.game && s.game.accounts) {
+            row("players", `${s.game.accounts} registered`);
+            row("active today", String(s.game.activeToday));
+          }
+          if (s.disk)
+            row("disk", `${gb(s.disk.used)} / ${gb(s.disk.total)} GB`);
+          if (s.temp !== null && s.temp !== undefined)
+            row("cpu temp", `${s.temp} C`);
+          if (s.net)
+            row(
+              "network",
+              `down ${gb(s.net.rx)} GB, up ${gb(s.net.tx)} GB since boot`,
+            );
+          if (s.backup) row("last backup", ago(s.backup));
+
+          statsBox.replaceChildren(frag);
+        }
+
+        function renderPatches(s) {
+          const frag = document.createDocumentFragment();
+          const h = document.createElement("div");
+          h.className = "label";
+          h.textContent = "latest patches";
+          frag.appendChild(h);
+
+          let count = 0;
+          for (const p of Array.isArray(s.patches) ? s.patches : []) {
+            if (
+              typeof p.link !== "string" ||
+              !p.link.startsWith("https://lore.kernel.org/")
+            )
+              continue;
+            const a = document.createElement("a");
+            a.href = p.link;
+            a.target = "_blank";
+            a.rel = "noopener";
+            a.textContent = `${String(p.date).slice(0, 10)}  ${p.title}`;
+            frag.appendChild(a);
+            count++;
+          }
+
+          if (count) patchBox.replaceChildren(frag);
+          else patchBox.textContent = "no recent patches to show";
+        }
+
+        async function loadStats() {
+          try {
+            const r = await fetch("https://stats.authsrng.xyz/", {
+              cache: "no-store",
+            });
+            if (!r.ok) throw new Error("bad status");
+            const s = await r.json();
+            renderStats(s);
+            renderPatches(s);
+          } catch {
+            statsBox.textContent = "dingus is napping (offline)";
+            patchBox.textContent = "couldn't load patches right now";
+          }
+        }
+
+        loadStats();
+        setInterval(() => {
+          if (!document.hidden) loadStats();
+        }, 30000);
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) loadStats();
+        });
+      })();
+    </script>
 
     <script src="src/main.js"></script>
     <script src="src/you.js"></script>
