@@ -20,6 +20,13 @@
         auto;
     }
   </style>
+  <script>
+    NekoType = "ghost";
+  </script>
+  <h1 id="nl">
+    <script src="https://webneko.net/n20171213.js"></script>
+    <a href="https://webneko.net">Neko</a>
+  </h1>
   <body>
     <header>
       <span class="mark">lovelyauth</span>
@@ -39,8 +46,130 @@
       <p>
         I am auth and I like to auth around! I can't say much about who I am
         really, there's not much to me anyways other than
-        <a href="photographs.html">me doing photography as a hobby</a>.
+        <a href="photographs.html">me doing photography as a hobby</a> and
+        obviously.. programming!
       </p>
+      <div id="dingus-stats" class="dstats">dingus: checking...</div>
+
+      <style>
+        .dstats {
+          font-family: monospace;
+        }
+        .dstats .row {
+          display: flex;
+          gap: 0.75em;
+        }
+        .dstats .label {
+          opacity: 0.6;
+          min-width: 8em;
+        }
+        .dstats .patches {
+          margin-top: 0.75em;
+        }
+        .dstats .patches a {
+          display: block;
+        }
+      </style>
+
+      <script>
+        (() => {
+          const box = document.getElementById("dingus-stats");
+          const gb = (n) => (n / 1024 ** 3).toFixed(1);
+          const ago = (ms) => {
+            const m = Math.floor((Date.now() - ms) / 60000);
+            if (m < 60) return `${m}m ago`;
+            if (m < 1440) return `${Math.floor(m / 60)}h ago`;
+            return `${Math.floor(m / 1440)}d ago`;
+          };
+
+          function render(s) {
+            const frag = document.createDocumentFragment();
+            const row = (label, value) => {
+              const d = document.createElement("div");
+              d.className = "row";
+              const l = document.createElement("span");
+              l.className = "label";
+              l.textContent = label;
+              const v = document.createElement("span");
+              v.textContent = value;
+              d.append(l, v);
+              frag.appendChild(d);
+            };
+
+            const days = Math.floor(s.uptime / 86400);
+            const hours = Math.floor((s.uptime % 86400) / 3600);
+            const up = s.services.filter((x) => x.status === "online").length;
+
+            row("status", "dingus is alive!!!!");
+            row("kernel", `linux ${s.kernel}`);
+            row("uptime", `${days}d ${hours}h`);
+            row("load", s.load.map((n) => n.toFixed(2)).join(" "));
+            row("memory", `${gb(s.mem.used)} / ${gb(s.mem.total)} GB`);
+            row("services", `${up}/${s.services.length} online`);
+
+            if (s.game && s.game.accounts) {
+              row("players", `${s.game.accounts} registered`);
+              row("active today", String(s.game.activeToday));
+            }
+            if (s.disk)
+              row("disk", `${gb(s.disk.used)} / ${gb(s.disk.total)} GB`);
+            if (s.temp !== null && s.temp !== undefined)
+              row("cpu temp", `${s.temp} C`);
+            if (s.net)
+              row(
+                "network",
+                `down ${gb(s.net.rx)} GB, up ${gb(s.net.tx)} GB since boot`,
+              );
+            if (s.backup) row("last backup", ago(s.backup));
+
+            if (Array.isArray(s.patches) && s.patches.length) {
+              const wrap = document.createElement("div");
+              wrap.className = "patches";
+              const h = document.createElement("div");
+              h.className = "label";
+              h.textContent = "latest patches";
+              wrap.appendChild(h);
+              for (const p of s.patches) {
+                if (
+                  typeof p.link !== "string" ||
+                  !p.link.startsWith("https://lore.kernel.org/")
+                )
+                  continue;
+                const a = document.createElement("a");
+                a.href = p.link;
+                a.target = "_blank";
+                a.rel = "noopener";
+                a.textContent = `${String(p.date).slice(0, 10)}  ${p.title}`;
+                wrap.appendChild(a);
+              }
+              frag.appendChild(wrap);
+            }
+
+            box.replaceChildren(frag);
+          }
+
+          async function loadStats() {
+            try {
+              const r = await fetch("https://stats.authsrng.xyz/", {
+                cache: "no-store",
+              });
+              if (!r.ok) throw new Error("bad status");
+              render(await r.json());
+            } catch {
+              box.textContent = "dingus is napping (offline)";
+            }
+          }
+
+          loadStats();
+          setInterval(() => {
+            if (!document.hidden) loadStats();
+          }, 30000);
+          document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) loadStats();
+          });
+        })();
+      </script>
+      <br />
       <div class="button-box">
         <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
           <img
@@ -104,14 +233,6 @@
 
       <hr />
 
-      <script>
-        NekoType = "ghost";
-      </script>
-      <h1 id="nl">
-        <script src="https://webneko.net/n20171213.js"></script>
-        <a href="https://webneko.net">Neko</a>
-      </h1>
-
       <section id="linux">
         <p class="dim">my contributions</p>
         <h2>Linux</h2>
@@ -158,6 +279,112 @@
             >
           </li>
         </ul>
+        <div id="wiki-edits" class="wedits">loading edits...</div>
+
+        <style>
+          .wedits {
+            font-family: monospace;
+            margin-top: 0.75em;
+          }
+          .wedits .label {
+            opacity: 0.6;
+          }
+          .wedits .when {
+            opacity: 0.6;
+            min-width: 6em;
+          }
+          .wedits .edit {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 0.75em;
+          }
+          .wedits .note {
+            flex-basis: 100%;
+            padding-left: 6.75em;
+          }
+        </style>
+
+        <script>
+          (() => {
+            const box = document.getElementById("wiki-edits");
+            const USER = "Lovelyauth";
+            const url =
+              "https://en.wikipedia.org/w/api.php?action=query&list=usercontribs" +
+              "&ucuser=" +
+              encodeURIComponent(USER) +
+              "&uclimit=5&ucprop=title|timestamp|comment|ids" +
+              "&format=json&origin=*";
+
+            const ago = (iso) => {
+              const m = Math.floor(
+                (Date.now() - new Date(iso).getTime()) / 60000,
+              );
+              if (m < 60) return `${Math.max(m, 1)}m ago`;
+              if (m < 1440) return `${Math.floor(m / 60)}h ago`;
+              return `${Math.floor(m / 1440)}d ago`;
+            };
+
+            // edit summaries look like "/* Section */ fixed tone"; keep just the human part
+            const cleanNote = (c) => {
+              const t = String(c || "")
+                .replace(/\/\*.*?\*\//g, "")
+                .trim();
+              return t.length > 70 ? t.slice(0, 70).trimEnd() + "…" : t;
+            };
+
+            async function load() {
+              try {
+                const r = await fetch(url);
+                if (!r.ok) throw new Error("bad status");
+                const data = await r.json();
+                const edits = (data.query && data.query.usercontribs) || [];
+                if (!edits.length) {
+                  box.textContent = "no recent edits found";
+                  return;
+                }
+
+                const frag = document.createDocumentFragment();
+                const h = document.createElement("div");
+                h.className = "label";
+                h.textContent = "latest edits";
+                frag.appendChild(h);
+
+                for (const e of edits) {
+                  const row = document.createElement("div");
+                  row.className = "edit";
+
+                  const when = document.createElement("span");
+                  when.className = "when";
+                  when.textContent = ago(e.timestamp);
+
+                  const a = document.createElement("a");
+                  a.href =
+                    "https://en.wikipedia.org/wiki/Special:Diff/" +
+                    encodeURIComponent(e.revid);
+                  a.target = "_blank";
+                  a.rel = "noopener";
+                  a.textContent = e.title;
+
+                  row.append(when, a);
+
+                  const note = cleanNote(e.comment);
+                  if (note) {
+                    const n = document.createElement("span");
+                    n.className = "note";
+                    n.textContent = "(" + note + ")";
+                    row.appendChild(n);
+                  }
+                  frag.appendChild(row);
+                }
+                box.replaceChildren(frag);
+              } catch {
+                box.textContent = "couldn't reach wikipedia right now";
+              }
+            }
+
+            load();
+          })();
+        </script>
       </section>
 
       <hr />

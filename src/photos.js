@@ -3,6 +3,53 @@
   const nav = document.getElementById("nav");
   let folders = [];
 
+  let current = []; // photos in the open folder: { src, name }
+  let idx = -1;
+
+  const lb = document.createElement("div");
+  lb.id = "lightbox";
+  lb.hidden = true;
+  const lbImg = document.createElement("img");
+  const lbCap = document.createElement("div");
+  lbCap.className = "lb-cap";
+  lb.append(lbImg, lbCap);
+  document.body.appendChild(lb);
+
+  function openAt(i) {
+    if (!current.length) return;
+    idx = (i + current.length) % current.length;
+    lbImg.src = current[idx].src;
+    lbImg.alt = current[idx].name;
+    lbCap.textContent = `${idx + 1} / ${current.length}  ${current[idx].name}`;
+    lb.hidden = false;
+    document.body.style.overflow = "hidden";
+    // preload the neighbors so arrowing feels instant
+    for (const j of [idx + 1, idx - 1]) {
+      new Image().src = current[(j + current.length) % current.length].src;
+    }
+  }
+
+  function closeLb() {
+    lb.hidden = true;
+    lbImg.removeAttribute("src");
+    document.body.style.overflow = "";
+  }
+
+  lb.addEventListener("click", closeLb);
+  addEventListener("keydown", (e) => {
+    if (lb.hidden) return;
+    if (e.key === "Escape") closeLb();
+    else if (e.key === "ArrowRight") openAt(idx + 1);
+    else if (e.key === "ArrowLeft") openAt(idx - 1);
+  });
+
+  view.addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-i]");
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    openAt(Number(a.dataset.i));
+  });
+
   function esc(s) {
     const d = document.createElement("div");
     d.textContent = s;
@@ -40,15 +87,19 @@
     document.title = pretty(f.id) + " / photos";
     setNav(true);
     const base = "src/assets/p/" + encodeURIComponent(f.id) + "/";
+    current = f.photos.map((p) => ({
+      src: base + encodeURIComponent(p),
+      name: p,
+    }));
     view.innerHTML =
       `<h1>${esc(pretty(f.id))}</h1>` +
       (f.photos.length
         ? '<div class="grid">' +
-          f.photos
-            .map((p) => {
-              const src = base + encodeURIComponent(p);
-              return `<figure><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${esc(p)}" loading="lazy" /></a><figcaption>${esc(p)}</figcaption></figure>`;
-            })
+          current
+            .map(
+              (p, i) =>
+                `<figure><a href="${p.src}" data-i="${i}" target="_blank" rel="noopener"><img src="${p.src}" alt="${esc(p.name)}" loading="lazy" /></a><figcaption>${esc(p.name)}</figcaption></figure>`,
+            )
             .join("") +
           "</div>"
         : "<p class='dim'>empty folder.</p>");
@@ -56,6 +107,8 @@
   }
 
   function route() {
+    closeLb();
+    current = [];
     const id = decodeURIComponent(location.hash.slice(1));
     const f = folders.find((x) => x.id === id);
     if (f) show(f);
