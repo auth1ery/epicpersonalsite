@@ -31,12 +31,51 @@ a:hover {
 }
 
 body {
-  max-width: 80ch;
-  margin: 0 auto;
-  padding: 1em;
+  max-width: none;
+  margin: 0;
+  padding: 1em 0;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 80ch) 1fr;
+  column-gap: 1em;
   line-height: 1.4;
 }
-
+body > * {
+  grid-column: 2;
+}
+body > .wave {
+  display: block;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  grid-row: 1 / span 50;
+  width: 100%;
+  height: 100vh;
+  pointer-events: none;
+  user-select: none;
+}
+body > .wave.left {
+  grid-column: 1;
+}
+body > .wave.right {
+  grid-column: 3;
+}
+@media (max-width: 1000px) {
+  body {
+    display: block;
+    max-width: 80ch;
+    margin: 0 auto;
+    padding: 1em;
+  }
+  body > .wave {
+    display: none;
+  }
+}
+body > .wave.left {
+  box-shadow: inset -1px 0 rgba(255, 255, 255, 0.25);
+}
+body > .wave.right {
+  box-shadow: inset 1px 0 rgba(255, 255, 255, 0.25);
+}
 h1,
 h2 {
   color: #fff;
