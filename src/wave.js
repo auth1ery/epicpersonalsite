@@ -2,6 +2,11 @@
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ramp = " .,:;-~=+*#%";
   const FS = 14;
+  const mouse = { x: -9999, y: -9999 };
+  addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
 
   function make(side) {
     const c = document.createElement("canvas");
@@ -37,6 +42,9 @@
 
     function draw(t) {
       g.clearRect(0, 0, w, h);
+      const r = c.getBoundingClientRect();
+      const px = (mouse.x - r.left) / cw;
+      const py = (mouse.y - r.top) / ch;
       const tick = Math.floor(t * 3);
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
@@ -46,11 +54,15 @@
           const hash =
             ((x * 73856093) ^ (y * 19349663) ^ (tick * 83492791)) >>> 0;
           const jitter = (hash % 100) / 100 - 0.5;
-          const v =
+          let v =
             Math.sin(e * 0.45 + t * 1.3 + Math.sin(y * 0.18 + t * 0.6) * 2.2) +
             s * 0.7 +
             Math.sin((e + y) * 0.3 + t * 0.9) * 0.5 +
             jitter * 0.6;
+          const dx = x - px;
+          const dy = y - py;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          v += Math.sin(dist * 0.9 - t * 4) * Math.max(0, 1 - dist / 16) * 1.4;
           let n = Math.min(Math.max((v + 2.2) / 4.4, 0), 1);
           n *= 1 - k * 0.75;
           const i = Math.floor(n * (ramp.length - 1));
