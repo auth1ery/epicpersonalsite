@@ -30,10 +30,10 @@
       view.innerHTML =
         `<h1>${esc(p.title)}</h1><div class="date">${esc(p.date)}</div>` +
         `<div class="prose" style="margin-top:24px">${marked.parse(md)}</div>` +
-        `<p style="margin-top:40px"><a class="back" href="#">&larr; all notes</a></p>`;
+        `<p style="margin-top:40px"><a class="back" href="#">< all notes</a></p>`;
     } catch {
       view.innerHTML =
-        "<p class='date'>couldn't load that post! oopsies..</p><a class='back' href='#'>&larr; all notes</a>";
+        "<p class='date'>couldn't load that post! oopsies..</p><a class='back' href='#'><all notes</a>";
     }
     scrollTo(0, 0);
   }

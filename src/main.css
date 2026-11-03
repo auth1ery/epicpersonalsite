@@ -304,3 +304,94 @@ footer > * {
   color: #fff;
   opacity: 0.7;
 }
+.tree,
+.tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tree ul {
+  margin-left: -1ch;
+}
+.tree li {
+  position: relative;
+  padding-left: 3ch;
+  line-height: 1.7;
+}
+.tree li::before {
+  content: "";
+  position: absolute;
+  left: 1ch;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid #444;
+}
+.tree li:last-child::before {
+  bottom: auto;
+  height: 0.85em;
+}
+.tree li::after {
+  content: "";
+  position: absolute;
+  left: 1ch;
+  top: 0.85em;
+  width: 1.5ch;
+  border-top: 1px solid #444;
+}
+.tree summary {
+  list-style: none;
+  cursor: pointer;
+  color: #fff;
+  font-weight: bold;
+}
+.tree summary::-webkit-details-marker {
+  display: none;
+}
+.tree summary::before {
+  content: "[+] ";
+  color: #c93;
+  font-weight: normal;
+}
+.tree details[open] > summary::before {
+  content: "[-] ";
+}
+.tree summary::after {
+  content: "/";
+  color: #666;
+}
+.tree a[target="_blank"]::after {
+  content: " >>";
+  color: #666;
+}
+.tree a:focus,
+.tree summary:focus {
+  outline: none;
+  background: #03c;
+  color: #fff;
+}
+.sbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(80ch, calc(100vw - 2em));
+  padding: 0.5em 0;
+  border-top: 1px dashed #666;
+  display: flex;
+  gap: 1ch;
+  align-items: center;
+  z-index: 5;
+}
+body:has(.sbar) main {
+  padding-bottom: 4em;
+}
+.sbar input {
+  width: 20ch;
+  border: 1px solid #666;
+  color: #fff;
+}
+.sbar #st {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sitemap</title>
+    <link rel="stylesheet" href="/src/main.css" />
+    <link rel="icon" href="/woawfavicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <header>
+      <span class="mark">lovelyauth</span>
+      <nav>
+        <a href="/">[home]</a>
+        <a href="/notes/">[notes]</a>
+        <a href="/photographs.html">[photos]</a>
+        <a href="/sitemap.html">[sitemap]</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>sitemap</h1>
+      <p class="dim">
+        every page on this site. press / to filter!
+      </p>
+
+      <ul class="tree" id="tree">
+        <li class="dim">crawling...</li>
+      </ul>
+    </main>
+
+    <div class="sbar">
+      <label for="q">/</label>
+      <input
+        id="q"
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="filter"
+      />
+      <span id="st" class="dim"></span>
+    </div>
+
+    <script src="/src/wave.js"></script>
+    <script src="/src/sitemap.js"></script>
+  </body>
+</html>
