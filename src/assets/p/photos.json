@@ -9,6 +9,13 @@
       ]
     },
     {
+      "id": "nature",
+      "photos": [
+        "nature1.png",
+        "nature2.png"
+      ]
+    },
+    {
       "id": "sunsets",
       "photos": [
         "sunset1.jpg",
