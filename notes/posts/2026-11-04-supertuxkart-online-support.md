@@ -20,7 +20,7 @@ survive, or to preserve your memories of this fun game.
 
 This game has been around since August 6th, 2007.
 
-Their blog post for more information: <https://blog.supertuxkart.net/2026/10/supertuxkart-online-has-gone-dark.html>
+Their blog post in question: <https://blog.supertuxkart.net/2026/10/supertuxkart-online-has-gone-dark.html>
 
 Just a short little note here.
 
