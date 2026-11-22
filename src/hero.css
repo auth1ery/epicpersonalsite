@@ -1,0 +1,527 @@
+
+#scene,
+.orbs,
+.pfallback {
+  display: none;
+}
+
+html.hud,
+html.hud body {
+  height: 100%;
+  overflow: hidden;
+}
+html.hud * {
+  background: transparent;
+}
+html.hud body {
+  display: block;
+  position: fixed;
+  inset: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  line-height: 1.4;
+}
+html.hud .fallback-only,
+html.hud main > hr {
+  display: none;
+}
+
+/* put back the fills main.css gave to a few things */
+html.hud a:hover {
+  background: #03c;
+}
+html.hud textarea {
+  background: #033;
+}
+html.hud button {
+  background: #000;
+}
+html.hud button:hover {
+  background: #03c;
+}
+html.hud .you {
+  background: #000;
+}
+html.hud .yclose {
+  background: #000;
+}
+
+html.hud #scene {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  touch-action: none;
+  background: #000;
+}
+html.hud.panel-open #scene {
+  cursor: default;
+}
+
+/* ---------------------------------------------------------------- hud bits */
+:root {
+  --edge: clamp(12px, 2vw, 32px);
+  --blue: #69f;
+  --violet: #a5f;
+  --amber: #c93;
+  --line: rgba(102, 153, 255, 0.45);
+  --panel-top: 96px;
+  --panel-bottom: 150px;
+  --foot-h: 34px;
+}
+
+html.hud .brand,
+html.hud .status,
+html.hud .stack,
+html.hud .foot {
+  z-index: 3;
+}
+
+html.hud .brand {
+  position: fixed;
+  top: clamp(10px, 2vh, 22px);
+  left: var(--edge);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  max-width: min(46ch, 62vw);
+}
+html.hud .brand .row1 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4em 1.4ch;
+}
+html.hud .brand .mark {
+  font-size: 1.2em;
+  letter-spacing: 0.1em;
+  padding: 0.25em 0.8ch;
+  border: 1px solid var(--blue);
+  position: relative;
+}
+html.hud .brand .mark::before,
+html.hud .brand .mark::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--blue);
+}
+html.hud .brand .mark::before {
+  top: -3px;
+  left: -3px;
+}
+html.hud .brand .mark::after {
+  right: -3px;
+  bottom: -3px;
+}
+html.hud .brand nav {
+  margin: 0;
+}
+html.hud .brand .dstats {
+  margin: 0;
+  font-size: 90%;
+}
+html.hud .brand .dstats .label {
+  min-width: 7ch;
+}
+
+html.hud .status {
+  display: block;
+  position: fixed;
+  top: clamp(10px, 2vh, 22px);
+  right: var(--edge);
+  width: min(34ch, 42vw);
+  padding: 0.55em 0.9ch 0.7em;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  font-size: 90%;
+}
+html.hud .status .presence {
+  margin: 0.35em 0 0;
+}
+html.hud .status .presence:not([hidden]) + .pfallback {
+  display: none;
+}
+html.hud .status .pfallback {
+  display: block;
+  margin-top: 0.35em;
+}
+html.hud .orbs {
+  display: flex;
+  gap: 0.8ch;
+  margin-top: 0.7em;
+}
+html.hud .orb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5em;
+  height: 2.5em;
+  border: 1px solid var(--blue);
+  border-radius: 50%;
+  padding: 0;
+  color: #fff;
+  font-size: 100%;
+  cursor: pointer;
+}
+html.hud .orb:hover,
+html.hud .orb.on {
+  background: #03c;
+  color: #fff;
+}
+
+/* bottom-left stack: intro + big dock labels */
+html.hud .stack {
+  position: fixed;
+  left: var(--edge);
+  right: var(--edge);
+  bottom: calc(var(--foot-h) + clamp(10px, 2.6vh, 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 1.1em;
+  pointer-events: none;
+}
+html.hud .stack > * {
+  pointer-events: auto;
+}
+html.hud .home-text {
+  width: min(56ch, 100%);
+  max-height: 44vh;
+  overflow: auto;
+  scrollbar-width: none;
+  padding: 0.2em 0;
+}
+html.hud .home-text h1 {
+  margin: 0 0 0.5em;
+  font-size: clamp(22px, 2.5vw, 40px);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-shadow: 0 0 22px rgba(102, 153, 255, 0.55);
+}
+html.hud .home-text p {
+  margin: 0 0 0.7em;
+  color: #bbb;
+  text-shadow:
+    0 0 6px #000,
+    0 0 12px #000;
+}
+html.hud.panel-open .home-text {
+  display: none;
+}
+
+html.hud .dock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em clamp(8px, 1.4vw, 24px);
+  margin: 0;
+  width: fit-content;
+  max-width: 100%;
+}
+html.hud .dock a {
+  margin: 0;
+  padding: 0.12em 0.7ch 0.12em 1.1ch;
+  border-left: 1px solid var(--blue);
+  font-size: clamp(14px, 1.7vw, 28px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.35);
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+html.hud .dock a small {
+  font-size: 0.42em;
+  letter-spacing: 0.05em;
+  vertical-align: top;
+  margin-right: 0.9ch;
+  color: var(--amber);
+}
+html.hud .dock a:hover,
+html.hud .dock a.hl,
+html.hud .dock a.on {
+  background: #03c;
+  border-left-color: #fff;
+}
+
+/* bottom-right: webring + 88x31 */
+html.hud .corner-br {
+  position: fixed;
+  right: var(--edge);
+  bottom: calc(var(--foot-h) + clamp(10px, 2.6vh, 24px));
+  width: min(30ch, 40vw);
+  padding: 0.5em 0.9ch;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  font-size: 90%;
+  text-align: right;
+}
+html.hud .corner-br .ring {
+  margin: 0 0 0.2em;
+}
+html.hud .corner-br a {
+  margin-left: 1ch;
+}
+html.hud .corner-br .button-box {
+  margin-top: 0.6em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+html.hud .corner-br details {
+  margin: 0.3em 0 0;
+}
+html.hud .corner-br textarea {
+  width: 30ch;
+  max-width: 100%;
+  font-size: 80%;
+}
+
+html.hud .foot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2em 2ch;
+  margin: 0;
+  padding: 0.35em var(--edge);
+  border-top: 1px dashed #444;
+  background: rgba(0, 0, 0, 0.75);
+  font-size: 85%;
+}
+html.hud .foot > * {
+  margin: 0;
+}
+html.hud .foot .terry img {
+  height: 1.7em;
+  width: auto;
+  margin-left: 0.6ch;
+}
+html.hud .foot .hint {
+  margin-left: auto;
+}
+html.hud .foot #nl {
+  display: inline;
+  font-weight: normal;
+  font-size: 100%;
+  color: #888;
+}
+html.hud .foot #nl::before {
+  content: "";
+}
+html.hud .foot button {
+  padding: 0 1ch;
+}
+
+/* ------------------------------------------------------------------ panels */
+html.hud main {
+  display: contents;
+}
+html.hud .panel {
+  display: none;
+  position: fixed;
+  z-index: 4;
+  left: var(--edge);
+  top: var(--panel-top);
+  bottom: var(--panel-bottom);
+  width: min(78ch, calc(100vw - 2 * var(--edge)));
+  overflow: auto;
+  padding: 0 1.8ch 1.4em;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(3px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--blue) #000;
+  outline: none;
+}
+html.hud .panel.open {
+  display: block;
+  animation: panelin 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+html.hud .panel.closing {
+  animation: panelout 0.18s ease-in both;
+}
+@keyframes panelin {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes panelout {
+  to {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+html.hud .pbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  margin: 0 -1.8ch 1em;
+  padding: 0.35em 1.8ch;
+  border-bottom: 1px solid var(--line);
+  background: #000;
+  color: var(--blue);
+}
+html.hud .pbar .ptitle {
+  color: var(--blue);
+}
+html.hud .pbar .pfill {
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--violet) 0 4px,
+    transparent 4px 8px
+  );
+  opacity: 0.6;
+}
+html.hud .pbar .pclose {
+  padding: 0 0.8ch;
+  border-color: var(--blue);
+  color: #fff;
+}
+html.hud .panel iframe {
+  max-width: 100%;
+}
+html.hud #favsong iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+html.hud #contact ul.links {
+  columns: 2;
+  column-gap: 3ch;
+}
+html.hud #contact ul.links li {
+  break-inside: avoid;
+}
+html.hud #contact h1 {
+  margin-top: 0.5em;
+}
+html.hud .panel .dstats {
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------- hud intro */
+@media (prefers-reduced-motion: no-preference) {
+  html.hud .brand,
+  html.hud .status,
+  html.hud .home-text,
+  html.hud .dock a,
+  html.hud .corner-br,
+  html.hud .foot {
+    animation: hudin 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  html.hud .status {
+    animation-delay: 0.5s;
+  }
+  html.hud .home-text {
+    animation-delay: 0.9s;
+  }
+  html.hud .dock a:nth-child(1) {
+    animation-delay: 1.2s;
+  }
+  html.hud .dock a:nth-child(2) {
+    animation-delay: 1.3s;
+  }
+  html.hud .dock a:nth-child(3) {
+    animation-delay: 1.4s;
+  }
+  html.hud .dock a:nth-child(4) {
+    animation-delay: 1.5s;
+  }
+  html.hud .dock a:nth-child(5) {
+    animation-delay: 1.6s;
+  }
+  html.hud .dock a:nth-child(6) {
+    animation-delay: 1.7s;
+  }
+  html.hud .corner-br {
+    animation-delay: 1.8s;
+  }
+  html.hud .foot {
+    animation-delay: 2s;
+  }
+}
+@keyframes hudin {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(3px);
+  }
+}
+
+/* ------------------------------------------------------------ small screens */
+@media (max-width: 1000px) {
+  html.hud .panel {
+    width: min(78ch, calc(100vw - 2 * var(--edge)));
+  }
+  html.hud.panel-open .corner-br,
+  html.hud.panel-open .status {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  html.hud .status {
+    display: none;
+  }
+  html.hud .brand {
+    max-width: calc(100vw - 2 * var(--edge));
+  }
+  html.hud .home-text {
+    max-height: 30vh;
+    font-size: 92%;
+    padding: 0.6em 1ch;
+    background: rgba(0, 0, 0, 0.6);
+  }
+  html.hud .corner-br {
+    position: static;
+    width: auto;
+    text-align: left;
+    align-self: flex-start;
+  }
+  html.hud .corner-br .button-box {
+    align-items: flex-start;
+  }
+  html.hud .corner-br a:first-of-type {
+    margin-left: 0;
+  }
+  html.hud .dock a {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+  html.hud .dock a small {
+    display: none;
+  }
+  html.hud .foot .hint,
+  html.hud .foot .terry img {
+    display: none;
+  }
+  html.hud #contact ul.links {
+    columns: 1;
+  }
+  html.hud.panel-open .stack .corner-br {
+    display: none;
+  }
+}
