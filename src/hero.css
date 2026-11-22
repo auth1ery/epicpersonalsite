@@ -229,7 +229,7 @@ html.hud .dock a {
   border-left: 1px solid var(--blue);
   font-size: clamp(14px, 1.7vw, 28px);
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: #fff;
   background: rgba(0, 0, 0, 0.35);
   transition:
