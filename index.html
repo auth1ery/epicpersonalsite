@@ -14,9 +14,21 @@
     <meta property="og:description" content="a wild auth has appeared!" />
     <meta property="og:type" content="website" />
     <script>
-      // the 3d landing is progressive: with js off (or if hero.js dies) you
-      // just get the old scrolling page, plus the side waves
       document.documentElement.classList.add("hud");
+      // that beautiful face of yours
+      try {
+        if (
+          !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+          (!sessionStorage.getItem("opening-seen") ||
+            /[?&]opening\b/.test(location.search))
+        ) {
+          document.documentElement.classList.add("opening");
+          setTimeout(function () {
+            if (!document.getElementById("opening"))
+              document.documentElement.classList.remove("opening");
+          }, 6000);
+        }
+      } catch (e) {}
       window.__heroFail = function () {
         document.documentElement.classList.remove("hud");
         var s = document.createElement("script");
@@ -25,6 +37,15 @@
       };
     </script>
     <style>
+      html.opening body {
+        visibility: hidden;
+      }
+      html.opening #opening {
+        visibility: visible;
+      }
+      html.opening * {
+        animation-play-state: paused !important;
+      }
       body {
         cursor:
           url(https://web.archive.org/web/20130518022001im_/http://ego-box.com/cursors/86.ico),
@@ -650,6 +671,9 @@
       <a href="src/credits.html">credits</a>
       <a href="https://github.com/auth1ery/epicpersonalsite">source</a>
       <button id="you-btn">about you</button>
+      <span class="hint dim"
+        >playing on this site: Cowboys and Angels - George Michael</span
+      >
       <span class="hint dim">berry wawwoes!</span>
       <script>
         NekoType = "ghost";
@@ -864,6 +888,11 @@
       })();
     </script>
     <script src="src/hero.js" onerror="window.__heroFail()"></script>
+    <script
+      type="module"
+      src="src/opening.js"
+      onerror="document.documentElement.classList.remove('opening')"
+    ></script>
     <script src="src/main.js"></script>
     <script src="src/you.js"></script>
   </body>
