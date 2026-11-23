@@ -1055,9 +1055,6 @@
         }
       }
 
-      drawMoon();
-      presenceReadout();
-
       /* readouts + crosshair */
       if (cols >= 110) {
         const ccx = Math.round(cxPx / cellW),
@@ -1069,7 +1066,7 @@
         putText(
           ccx + reach - 22 > cols - 26 ? cols - 26 : ccx + reach - 22,
           Math.max(2, ccy - Math.round(rows * 0.4)),
-          `SYS.AUTH // knot(2,3) n=${KN}`,
+          `cloudlull.sys // knot(2,3) n=${KN}`,
           hudRow,
           -100,
         );

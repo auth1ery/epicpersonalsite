@@ -152,10 +152,17 @@ html.hud .status .pfallback {
   margin-top: 0.35em;
 }
 html.hud .vstats {
-  margin-top: 0.5em;
-  padding-top: 0.45em;
-  border-top: 1px dashed #444;
+  margin-top: 0.7em;
   color: #bbb;
+}
+html.hud .vstats::before {
+  content: "------------------------------";
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-bottom: 0.5em;
+  color: var(--violet);
+  opacity: 0.55;
 }
 html.hud .vstats b {
   color: #fff;
@@ -218,7 +225,9 @@ html.hud .home-text h1 {
 html.hud .home-text p {
   margin: 0 0 0.7em;
   color: #bbb;
-  text-shadow: 0 0 6px #000, 0 0 12px #000;
+  text-shadow:
+    0 0 6px #000,
+    0 0 12px #000;
 }
 html.hud.panel-open .home-text {
   display: none;
@@ -241,7 +250,9 @@ html.hud .dock a {
   text-transform: lowercase;
   color: #fff;
   background: rgba(0, 0, 0, 0.35);
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 html.hud .dock a small {
   font-size: 0.42em;
@@ -256,41 +267,42 @@ html.hud .dock a.on {
   background: #03c;
   border-left-color: #fff;
 }
-
-/* bottom-right: webring + 88x31 */
-html.hud .corner-br {
+html.hud .corner-col {
   position: fixed;
   right: var(--edge);
   bottom: calc(var(--foot-h) + clamp(10px, 2.6vh, 24px));
   width: min(30ch, 40vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+html.hud .corner-br,
+html.hud .cafe {
   padding: 0.5em 0.9ch;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(2px);
   font-size: 90%;
+}
+html.hud .corner-br {
   text-align: right;
 }
-html.hud .corner-br .ring {
-  margin: 0 0 0.2em;
+html.hud .cafe {
+  text-align: left;
 }
-html.hud .corner-br a {
-  margin-left: 1ch;
+html.hud .cafe #statuscafe-username {
+  color: var(--blue);
 }
-html.hud .corner-br .button-box {
-  margin-top: 0.6em;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+html.hud .cafe #statuscafe-content {
+  max-height: 6em;
+  overflow: auto;
+  scrollbar-width: thin;
 }
-html.hud .corner-br details {
-  margin: 0.3em 0 0;
+@media (max-height: 640px) {
+  html.hud .cafe {
+    display: none;
+  }
 }
-html.hud .corner-br textarea {
-  width: 30ch;
-  max-width: 100%;
-  font-size: 80%;
-}
-
 html.hud .foot {
   position: fixed;
   left: 0;
@@ -395,7 +407,11 @@ html.hud .pbar .ptitle {
 html.hud .pbar .pfill {
   flex: 1;
   height: 1px;
-  background: repeating-linear-gradient(90deg, var(--violet) 0 4px, transparent 4px 8px);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--violet) 0 4px,
+    transparent 4px 8px
+  );
   opacity: 0.6;
 }
 html.hud .pbar .pclose {
@@ -432,6 +448,7 @@ html.hud .panel .dstats {
   html.hud .status,
   html.hud .home-text,
   html.hud .dock a,
+  html.hud .cafe,
   html.hud .corner-br,
   html.hud .foot {
     animation: hudin 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -442,12 +459,27 @@ html.hud .panel .dstats {
   html.hud .home-text {
     animation-delay: 0.9s;
   }
-  html.hud .dock a:nth-child(1) { animation-delay: 1.2s; }
-  html.hud .dock a:nth-child(2) { animation-delay: 1.3s; }
-  html.hud .dock a:nth-child(3) { animation-delay: 1.4s; }
-  html.hud .dock a:nth-child(4) { animation-delay: 1.5s; }
-  html.hud .dock a:nth-child(5) { animation-delay: 1.6s; }
-  html.hud .dock a:nth-child(6) { animation-delay: 1.7s; }
+  html.hud .dock a:nth-child(1) {
+    animation-delay: 1.2s;
+  }
+  html.hud .dock a:nth-child(2) {
+    animation-delay: 1.3s;
+  }
+  html.hud .dock a:nth-child(3) {
+    animation-delay: 1.4s;
+  }
+  html.hud .dock a:nth-child(4) {
+    animation-delay: 1.5s;
+  }
+  html.hud .dock a:nth-child(5) {
+    animation-delay: 1.6s;
+  }
+  html.hud .dock a:nth-child(6) {
+    animation-delay: 1.7s;
+  }
+  html.hud .cafe {
+    animation-delay: 1.7s;
+  }
   html.hud .corner-br {
     animation-delay: 1.8s;
   }
@@ -468,7 +500,7 @@ html.hud .panel .dstats {
   html.hud .panel {
     width: min(78ch, calc(100vw - 2 * var(--edge)));
   }
-  html.hud.panel-open .corner-br,
+  html.hud.panel-open .corner-col,
   html.hud.panel-open .status {
     display: none;
   }
@@ -486,11 +518,16 @@ html.hud .panel .dstats {
     padding: 0.6em 1ch;
     background: rgba(0, 0, 0, 0.6);
   }
-  html.hud .corner-br {
+  html.hud .corner-col {
     position: static;
     width: auto;
-    text-align: left;
     align-self: flex-start;
+  }
+  html.hud .corner-br {
+    text-align: left;
+  }
+  html.hud .cafe {
+    display: none;
   }
   html.hud .corner-br .button-box {
     align-items: flex-start;
@@ -515,4 +552,76 @@ html.hud .panel .dstats {
   html.hud.panel-open .stack .corner-br {
     display: none;
   }
+}
+html.hud .moonwrap {
+  position: relative;
+  width: fit-content;
+  cursor: pointer;
+}
+html.hud .moonwrap .label {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+html.hud .moondrop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 5;
+  padding: 0.9em 1.4ch 0.8em;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  clip-path: inset(0 0 100% 0);
+  transition:
+    opacity 0.18s,
+    transform 0.22s,
+    clip-path 0.22s,
+    visibility 0s 0.22s;
+}
+html.hud .moonwrap.open .moondrop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  clip-path: inset(0);
+  transition-delay: 0s;
+}
+@media (hover: hover) {
+  html.hud .moonwrap:hover .moondrop {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    clip-path: inset(0);
+    transition-delay: 0s;
+  }
+}
+html.hud .moondrop pre {
+  margin: 0;
+  font: inherit;
+  line-height: 1;
+  white-space: pre;
+}
+html.hud .moondrop i {
+  font-style: normal;
+}
+html.hud .moondrop i.l {
+  color: #fff;
+}
+html.hud .moondrop i.d {
+  color: var(--violet);
+  opacity: 0.55;
+}
+html.hud .moonmeta {
+  margin-top: 0.7em;
+  color: var(--blue);
+  font-size: 90%;
+  white-space: nowrap;
+}
+html.hud .brand {
+  z-index: 6;
 }

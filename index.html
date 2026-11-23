@@ -123,40 +123,44 @@
           This site serves as a portfolio/personal-site mashed up together into
           multiple spicy files that you have the privilege to view as its own.
         </p>
-        <p>---------------------</p>
-        <p>status:</p>
-        <div id="statuscafe">
-          <div id="statuscafe-username"></div>
-          <div id="statuscafe-content"></div>
-        </div>
-        <script
-          src="https://status.cafe/current-status.js?name=auth"
-          defer
-        ></script>
       </div>
 
-      <div class="corner-br">
-        <p class="ring">
-          the <a href="https://wawwoe.cloudlull.fyi">wawwoe</a> webring
-        </p>
-        <a href="https://wawwoe.cloudlull.fyi/auth/previous">&lt; prev</a>
-        <a href="https://wawwoe.cloudlull.fyi/random">random</a>
-        <a href="https://wawwoe.cloudlull.fyi/auth/next">next &gt;</a>
-        <div class="button-box">
-          <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
-            <img
-              src="src/assets/button.gif"
-              width="88"
-              height="31"
-              alt="auth's button"
-            />
-          </a>
-          <details>
-            <summary>steal this (yes hotlink!)</summary>
-            <textarea readonly rows="3" onclick="this.select()">
+      <div class="corner-col">
+        <div class="cafe">
+          <div class="dim">// status.cafe</div>
+          <div id="statuscafe">
+            <div id="statuscafe-username"></div>
+            <div id="statuscafe-content"></div>
+          </div>
+          <script
+            src="https://status.cafe/current-status.js?name=auth"
+            defer
+          ></script>
+        </div>
+
+        <div class="corner-br">
+          <p class="ring">
+            the <a href="https://wawwoe.cloudlull.fyi">wawwoe</a> webring
+          </p>
+          <a href="https://wawwoe.cloudlull.fyi/auth/previous">&lt; prev</a>
+          <a href="https://wawwoe.cloudlull.fyi/random">random</a>
+          <a href="https://wawwoe.cloudlull.fyi/auth/next">next &gt;</a>
+          <div class="button-box">
+            <a href="https://auth.cloudlull.fyi" target="_blank" rel="noopener">
+              <img
+                src="src/assets/button.gif"
+                width="88"
+                height="31"
+                alt="auth's button"
+              />
+            </a>
+            <details>
+              <summary>steal this (yes hotlink!)</summary>
+              <textarea readonly rows="3" onclick="this.select()">
 &lt;a href="https://auth.cloudlull.fyi"&gt;&lt;img src="https://auth.cloudlull.fyi/src/assets/button.gif" width="88" height="31" alt="auth"&gt;&lt;/a&gt;</textarea
-            >
-          </details>
+              >
+            </details>
+          </div>
         </div>
       </div>
 
@@ -827,8 +831,7 @@
         const box = document.getElementById("auth-clock");
         const TZ = "America/Edmonton";
         const SYNODIC = 29.530588853;
-        const REF = Date.UTC(2000, 0, 6, 18, 14); // a known new moon
-
+        const REF = Date.UTC(2000, 0, 6, 18, 14);
         const moons = [
           ["🌑", "new moon ."],
           ["🌒", "waxing crescent"],
@@ -839,7 +842,6 @@
           ["🌗", "last quarter"],
           ["🌘", "waning crescent"],
         ];
-
         const timeFmt = new Intl.DateTimeFormat("en-US", {
           timeZone: TZ,
           weekday: "short",
@@ -852,7 +854,6 @@
           hour: "numeric",
           hourCycle: "h23",
         });
-
         const dayPart = (h) =>
           h < 5
             ? "midnight"
@@ -866,10 +867,81 @@
                     ? "evening"
                     : "night";
 
+        function moonArt(frac) {
+          const th = frac * Math.PI * 2,
+            sn = Math.sin(th),
+            cs = Math.cos(th);
+          const ry = 6,
+            rx = 10,
+            ramp = ".,:;-~=+*#%@";
+          let out = "";
+          for (let y = -ry; y <= ry; y++) {
+            let row = "",
+              cur = "",
+              run = "";
+            const flush = () => {
+              if (run) row += cur ? `<i class="${cur}">${run}</i>` : run;
+              run = "";
+            };
+            for (let x = -rx; x <= rx; x++) {
+              const dx = x / (rx + 0.4),
+                dy = y / (ry + 0.3),
+                d2 = dx * dx + dy * dy;
+              let ch = " ",
+                k = "";
+              if (d2 < 1) {
+                const lum = dx * sn - Math.sqrt(1 - d2) * cs;
+                const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
+                if (lum > 0.04) {
+                  let i = Math.round(Math.min(1, lum) * (ramp.length - 1));
+                  if (h % 7 === 0) i = Math.max(1, i - 3);
+                  ch = ramp[i];
+                  k = "l";
+                } else {
+                  ch = d2 > 0.78 ? "." : ":";
+                  k = "d";
+                }
+              }
+              if (k !== cur) {
+                flush();
+                cur = k;
+              }
+              run += ch;
+            }
+            flush();
+            out += row + "\n";
+          }
+          return out;
+        }
+
+        box.innerHTML =
+          '<div class="row"><span class="label">my time</span><span id="c-time"></span></div>' +
+          '<div class="row moonwrap" tabindex="0" role="button" aria-expanded="false" aria-controls="moondrop">' +
+          '<span class="label">da moon</span><span id="c-moon"></span>' +
+          '<div class="moondrop" id="moondrop"><pre id="moonart" aria-hidden="true"></pre><div class="moonmeta" id="moonmeta"></div></div>' +
+          "</div>";
+
+        const wrap = box.querySelector(".moonwrap");
+        const setOpen = (on) => {
+          wrap.classList.toggle("open", on);
+          wrap.setAttribute("aria-expanded", String(on));
+        };
+        wrap.addEventListener("click", () =>
+          setOpen(!wrap.classList.contains("open")),
+        );
+        wrap.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            wrap.click();
+          } else if (e.key === "Escape") setOpen(false);
+        });
+        document.addEventListener("pointerdown", (e) => {
+          if (!wrap.contains(e.target)) setOpen(false);
+        });
+
         function update() {
           const now = new Date();
           const hour = parseInt(hourFmt.format(now), 10);
-
           const age =
             ((((now - REF) / 86400000) % SYNODIC) + SYNODIC) % SYNODIC;
           const frac = age / SYNODIC;
@@ -877,25 +949,14 @@
           const lit = Math.round(
             ((1 - Math.cos(2 * Math.PI * frac)) / 2) * 100,
           );
-
-          const frag = document.createDocumentFragment();
-          const row = (label, value) => {
-            const d = document.createElement("div");
-            d.className = "row";
-            const l = document.createElement("span");
-            l.className = "label";
-            l.textContent = label;
-            const v = document.createElement("span");
-            v.textContent = value;
-            d.append(l, v);
-            frag.appendChild(d);
-          };
-
-          row("my time", `${timeFmt.format(now)} (${dayPart(hour)})`);
-          row("da moon", `${icon} ${name}, ${lit}% lit`);
-          box.replaceChildren(frag);
+          document.getElementById("c-time").textContent =
+            `${timeFmt.format(now)} (${dayPart(hour)})`;
+          document.getElementById("c-moon").textContent =
+            `${icon} ${name}, ${lit}% lit`;
+          document.getElementById("moonart").innerHTML = moonArt(frac);
+          document.getElementById("moonmeta").textContent =
+            `${name} // day ${age.toFixed(1)} of 29.5`;
         }
-
         update();
         setInterval(update, 30000);
       })();
