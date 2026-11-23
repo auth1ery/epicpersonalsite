@@ -15,7 +15,7 @@
     <meta property="og:type" content="website" />
     <script>
       document.documentElement.classList.add("hud");
-      // that beautiful face of yours
+      // this is once per session
       try {
         if (
           !matchMedia("(prefers-reduced-motion: reduce)").matches &&
@@ -78,6 +78,12 @@
         <span class="pdot"></span><span class="ptxt"></span>
       </div>
       <div class="dim pfallback">discord presence unavailable</div>
+      <div class="vstats" id="vstats" hidden>
+        <div id="v-you" hidden>you are visitor <b id="v-n">#</b></div>
+        <div id="v-live-line">
+          there are <b id="v-live">1</b> people on site right now
+        </div>
+      </div>
       <div class="orbs">
         <a
           class="orb"
@@ -901,6 +907,7 @@
       onerror="document.documentElement.classList.remove('opening')"
     ></script>
     <script src="src/main.js"></script>
+    <script src="src/visitors.js"></script>
     <script src="src/you.js"></script>
   </body>
 </html>

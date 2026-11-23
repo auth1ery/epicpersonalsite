@@ -1,4 +1,3 @@
-
 #scene,
 .orbs,
 .pfallback {
@@ -152,6 +151,18 @@ html.hud .status .pfallback {
   display: block;
   margin-top: 0.35em;
 }
+html.hud .vstats {
+  margin-top: 0.5em;
+  padding-top: 0.45em;
+  border-top: 1px dashed #444;
+  color: #bbb;
+}
+html.hud .vstats b {
+  color: #fff;
+}
+html.hud .vstats #v-you b {
+  color: var(--amber);
+}
 html.hud .orbs {
   display: flex;
   gap: 0.8ch;
@@ -207,9 +218,7 @@ html.hud .home-text h1 {
 html.hud .home-text p {
   margin: 0 0 0.7em;
   color: #bbb;
-  text-shadow:
-    0 0 6px #000,
-    0 0 12px #000;
+  text-shadow: 0 0 6px #000, 0 0 12px #000;
 }
 html.hud.panel-open .home-text {
   display: none;
@@ -232,9 +241,7 @@ html.hud .dock a {
   text-transform: lowercase;
   color: #fff;
   background: rgba(0, 0, 0, 0.35);
-  transition:
-    background 0.15s,
-    border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 html.hud .dock a small {
   font-size: 0.42em;
@@ -388,11 +395,7 @@ html.hud .pbar .ptitle {
 html.hud .pbar .pfill {
   flex: 1;
   height: 1px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--violet) 0 4px,
-    transparent 4px 8px
-  );
+  background: repeating-linear-gradient(90deg, var(--violet) 0 4px, transparent 4px 8px);
   opacity: 0.6;
 }
 html.hud .pbar .pclose {
@@ -439,24 +442,12 @@ html.hud .panel .dstats {
   html.hud .home-text {
     animation-delay: 0.9s;
   }
-  html.hud .dock a:nth-child(1) {
-    animation-delay: 1.2s;
-  }
-  html.hud .dock a:nth-child(2) {
-    animation-delay: 1.3s;
-  }
-  html.hud .dock a:nth-child(3) {
-    animation-delay: 1.4s;
-  }
-  html.hud .dock a:nth-child(4) {
-    animation-delay: 1.5s;
-  }
-  html.hud .dock a:nth-child(5) {
-    animation-delay: 1.6s;
-  }
-  html.hud .dock a:nth-child(6) {
-    animation-delay: 1.7s;
-  }
+  html.hud .dock a:nth-child(1) { animation-delay: 1.2s; }
+  html.hud .dock a:nth-child(2) { animation-delay: 1.3s; }
+  html.hud .dock a:nth-child(3) { animation-delay: 1.4s; }
+  html.hud .dock a:nth-child(4) { animation-delay: 1.5s; }
+  html.hud .dock a:nth-child(5) { animation-delay: 1.6s; }
+  html.hud .dock a:nth-child(6) { animation-delay: 1.7s; }
   html.hud .corner-br {
     animation-delay: 1.8s;
   }

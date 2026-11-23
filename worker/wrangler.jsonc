@@ -1,0 +1,12 @@
+{
+  "name": "auth-stats",
+  "main": "src/index.js",
+  "compatibility_date": "2025-11-01",
+  "durable_objects": {
+    "bindings": [{ "name": "STATS", "class_name": "Stats" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Stats"] }],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://auth.cloudlull.fyi,http://localhost:8123"
+  }
+}

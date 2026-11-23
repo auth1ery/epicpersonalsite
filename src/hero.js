@@ -1,6 +1,4 @@
-/*
- * oh god
- */
+
 (() => {
   "use strict";
 
@@ -25,7 +23,8 @@
     if (!g) throw new Error("no 2d context");
 
     /* ------------------------------------------------------------ palette */
-    const COLORS = ["#ffffff", "#6699ff", "#aa55ff", "#cc9933"];
+    const BASE = ["#ffffff", "#6699ff", "#aa55ff", "#cc9933"];
+    const COLORS = BASE.slice(); // tinted by the visitor's local time of day, see applyTimeTint()
     const WHITE = 0,
       BLUE = 1,
       VIOLET = 2,
@@ -80,6 +79,20 @@
       ox = (Wpx - cols * cellW) >> 1;
       oy = (Hpx - rows * cellH) >> 1;
 
+      buildAtlas();
+
+      const n = cols * rows;
+      zb = new Float32Array(n);
+      cb = new Uint8Array(n);
+      rb = new Uint8Array(n);
+      ob = new Uint8Array(n);
+      buildGrid();
+      rebuildRings();
+      rebuildKnot();
+      return true;
+    }
+
+    function buildAtlas() {
       atlas = document.createElement("canvas");
       atlas.width = NCH * cellW;
       atlas.height = 16 * cellH;
@@ -96,17 +109,48 @@
               (b * 4 + l) * cellH,
             );
         }
-
-      const n = cols * rows;
-      zb = new Float32Array(n);
-      cb = new Uint8Array(n);
-      rb = new Uint8Array(n);
-      ob = new Uint8Array(n);
-      buildGrid();
-      rebuildRings();
-      rebuildKnot();
-      return true;
     }
+
+    // night = deep indigo, dawn = peach, day = sky, dusk = rose; blended
+    // gently into the blue/violet/white so it reads as a mood, not a recolour
+    const TOD = [
+      [0, [85, 96, 255]],
+      [6, [255, 159, 122]],
+      [12, [127, 208, 255]],
+      [18, [255, 127, 168]],
+      [24, [85, 96, 255]],
+    ];
+    function hex2rgb(h) {
+      const n = parseInt(h.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    function mixHex(h, rgb, k) {
+      const c = hex2rgb(h);
+      return (
+        "#" +
+        c
+          .map((v, i) =>
+            Math.round(v + (rgb[i] - v) * k)
+              .toString(16)
+              .padStart(2, "0"),
+          )
+          .join("")
+      );
+    }
+    function applyTimeTint() {
+      const d = new Date();
+      const h = d.getHours() + d.getMinutes() / 60;
+      let i = 0;
+      while (i < TOD.length - 2 && h >= TOD[i + 1][0]) i++;
+      const [h0, c0] = TOD[i],
+        [h1, c1] = TOD[i + 1];
+      const f = (h - h0) / (h1 - h0);
+      const T = c0.map((v, j) => v + (c1[j] - v) * f);
+      COLORS[0] = mixHex(BASE[0], T, 0.14);
+      COLORS[1] = mixHex(BASE[1], T, 0.4);
+      COLORS[2] = mixHex(BASE[2], T, 0.28);
+    }
+    applyTimeTint();
 
     /* -------------------------------------------------------------- buffer */
     function put(x, y, z, c, r, own) {
@@ -623,6 +667,15 @@
       open: null,
       pointerCellX: -999,
       pointerCellY: -999,
+      zoomF: 1,
+      zoomT: 1,
+      pulsePh: 0,
+      pulseSp: 2.2,
+      pulseSpT: 2.2,
+      pulseAmp: 0.35,
+      pulseAmpT: 0.35,
+      gyro: false,
+      pres: { kind: "none", text: "" },
     };
     const Rc = new Float64Array(9),
       Rr = new Float64Array(9),
@@ -737,6 +790,10 @@
       st.cyF = lerp(st.cyF, st.cyT, k);
       st.scF = lerp(st.scF, st.scT, k);
       st.dimF = lerp(st.dimF, st.dimT, k);
+      st.zoomF = lerp(st.zoomF, st.zoomT, k);
+      st.pulseSp = lerp(st.pulseSp, st.pulseSpT, 1 - Math.exp(-dt * 1.5));
+      st.pulseAmp = lerp(st.pulseAmp, st.pulseAmpT, 1 - Math.exp(-dt * 1.5));
+      st.pulsePh += dt * st.pulseSp * st.timeScale;
       dimLvl = st.dimF > 0.5 ? 1 : 0;
       st.mxS = lerp(st.mxS, st.mx, 1 - Math.exp(-dt * 3));
       st.myS = lerp(st.myS, st.my, 1 - Math.exp(-dt * 3));
@@ -745,7 +802,7 @@
       st.velYaw *= 0.94;
       st.velPitch *= 0.94;
 
-      S = S0() * st.scF;
+      S = S0() * st.scF * st.zoomF;
       cxPx = Wpx * st.cxF;
       cyPx = Hpx * st.cyF + Math.sin(t * 0.5) * S * 0.04;
 
@@ -840,7 +897,7 @@
         const grow = ease(boot * 1.3);
         const m = Rc;
         const lim = Math.floor(KN * grow);
-        const pulseT = t * 2.2;
+        const pulseT = st.pulsePh;
         for (let i = 0; i < lim; i++) {
           const i3 = i * 3;
           const nx = kNor[i3],
@@ -873,7 +930,7 @@
             diff * 0.68 +
             rim * rim * 0.18 +
             Math.pow(diff, 14) * 0.3 +
-            pulse * 0.35;
+            pulse * st.pulseAmp;
           if (kG[i]) lum *= 0.72;
           lum = clamp(lum, 0, 1);
           const ci = 2 + Math.round(lum * (NR - 3));
@@ -998,6 +1055,9 @@
         }
       }
 
+      drawMoon();
+      presenceReadout();
+
       /* readouts + crosshair */
       if (cols >= 110) {
         const ccx = Math.round(cxPx / cellW),
@@ -1009,7 +1069,7 @@
         putText(
           ccx + reach - 22 > cols - 26 ? cols - 26 : ccx + reach - 22,
           Math.max(2, ccy - Math.round(rows * 0.4)),
-          `cloudlull.sys // knot(2,3) n=${KN}`,
+          `SYS.AUTH // knot(2,3) n=${KN}`,
           hudRow,
           -100,
         );
@@ -1036,6 +1096,109 @@
             -100,
           );
       }
+    }
+
+    /* ------------------------------------------------------ live presence */
+    // main.js polls lanyard into #presence; the scene just reads what it wrote !
+    const presEl = document.getElementById("presence");
+    const PRES = {
+      music: [3.6, 0.5],
+      game: [2.8, 0.45],
+      watch: [2.2, 0.4],
+      online: [2.2, 0.35],
+      busy: [1.8, 0.3],
+      idle: [1.3, 0.2],
+      offline: [0.7, 0.12],
+      none: [2.2, 0.35],
+    };
+    function readPresence() {
+      let kind = "none",
+        text = "";
+      if (presEl && !presEl.hidden) {
+        const sv = presEl.dataset.s;
+        const label = presEl.querySelector(".ptxt");
+        text = label ? label.textContent.trim() : "";
+        kind = /^listening to/.test(text)
+          ? "music"
+          : /^(playing|streaming|competing)/.test(text)
+            ? "game"
+            : /^watching/.test(text)
+              ? "watch"
+              : sv === "offline"
+                ? "offline"
+                : sv === "idle"
+                  ? "idle"
+                  : sv === "dnd"
+                    ? "busy"
+                    : "online";
+      }
+      st.pres = { kind, text };
+      st.pulseSpT = PRES[kind][0];
+      st.pulseAmpT = PRES[kind][1];
+    }
+    readPresence();
+    setInterval(readPresence, 2000);
+
+    function presenceReadout() {
+      if (cols < 110 || st.pres.kind === "none") return;
+      const reach = Math.round((S0() * st.scF * st.zoomF * 3.9) / cellW);
+      const ccx = Math.round(cxPx / cellW),
+        ccy = Math.round(cyPx / cellH);
+      let txt =
+        (st.pres.kind === "music" ? "NOW // " : "AUTH // ") + st.pres.text;
+      txt = txt.replace(/[^\x20-\x7e]/g, "?");
+      if (txt.length > 44) txt = txt.slice(0, 43) + "~";
+      const x = Math.max(
+        2,
+        Math.min(cols - txt.length - 2, ccx + reach - txt.length),
+      );
+      const y = Math.min(rows - 3, ccy + Math.round(rows * 0.36) + 2);
+      putText(x, y, txt, rowOf(AMBER, 2), -100);
+    }
+
+    /* ------------------------------------------------------------ the moon */
+    const SYN = 29.530588853;
+    const MOON_REF = Date.UTC(2000, 0, 6, 18, 14); // a known new moon
+    function drawMoon() {
+      if (cols < 120 || rows < 34) return;
+      const age = ((((Date.now() - MOON_REF) / 86400000) % SYN) + SYN) % SYN;
+      const th = (age / SYN) * Math.PI * 2;
+      const sn = Math.sin(th),
+        cs = Math.cos(th);
+      const ry = 4,
+        rx = Math.round((ry * cellH) / cellW);
+      const mcx = Math.round(cols * 0.5),
+        mcy = 6;
+      for (let y = mcy - ry; y <= mcy + ry; y++)
+        for (let x = mcx - rx; x <= mcx + rx; x++) {
+          const dx = (x - mcx) / (rx + 0.4),
+            dy = (y - mcy) / (ry + 0.3);
+          const d2 = dx * dx + dy * dy;
+          if (d2 >= 1) continue;
+          const nz = Math.sqrt(1 - d2);
+          const lum = dx * sn - nz * cs; // >0 = lit by the sun
+          const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
+          let c, r;
+          if (lum > 0.04) {
+            let i = 2 + Math.round(clamp(lum, 0, 1) * (NR - 3));
+            if (h % 7 === 0) i = Math.max(2, i - 3); // craters
+            c = RAMPI[i];
+            r = i > 7 ? rowOf(WHITE, 3) : rowOf(WHITE, 2);
+          } else {
+            c = d2 > 0.78 ? gi(".") : gi(":");
+            r = rowOf(VIOLET, 0);
+          }
+          put(x, y, -80, c, r, 0);
+        }
+      const pct = Math.round(((1 - cs) / 2) * 100);
+      const label = `moon ${pct}%`;
+      putText(
+        mcx - (label.length >> 1),
+        mcy + ry + 2,
+        label,
+        rowOf(BLUE, 1),
+        -80,
+      );
     }
 
     function present() {
@@ -1081,7 +1244,11 @@
         st.paused || reduce ? 0 : 1,
         1 - Math.exp(-dt * 4),
       );
-      st.boot = reduce ? 1 : Math.min(1, st.boot + dt / 2.8);
+      st.boot = reduce
+        ? 1
+        : root.classList.contains("opening")
+          ? 0
+          : Math.min(1, st.boot + dt / 2.8); // wait for the intro
       render(dt);
       present();
       const cost = performance.now() - t0;
@@ -1136,11 +1303,29 @@
       return -1;
     }
     let drag = null;
+    const ptrs = new Map();
+    let pinchPrev = 0;
     addEventListener("pointermove", (e) => {
-      st.mx = (e.clientX / innerWidth - 0.5) * 2;
-      st.my = (e.clientY / innerHeight - 0.5) * 2;
+      if (!(st.gyro && e.pointerType === "touch")) {
+        st.mx = (e.clientX / innerWidth - 0.5) * 2;
+        st.my = (e.clientY / innerHeight - 0.5) * 2;
+      }
       if (reduce) {
         st.mx = st.my = 0;
+      }
+      if (ptrs.has(e.pointerId)) {
+        ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+        if (ptrs.size === 2) {
+          // two fingers: pinch to zoom instead of rotating
+          const [a, b] = [...ptrs.values()];
+          const dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
+          if (pinchPrev)
+            st.zoomT = clamp(st.zoomT * (dist / pinchPrev), 0.55, 1.7);
+          pinchPrev = dist;
+          drag = null;
+          wake();
+          return;
+        }
       }
       const [cx, cy] = toCell(e);
       st.pointerCellX = cx;
@@ -1165,6 +1350,12 @@
       wake();
     });
     canvas.addEventListener("pointerdown", (e) => {
+      ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+      if (ptrs.size === 2) {
+        drag = null;
+        pinchPrev = 0;
+        return;
+      }
       drag = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: 0 };
       canvas.setPointerCapture(e.pointerId);
     });
@@ -1179,8 +1370,61 @@
         else if (st.open) ui.close();
       }
     };
-    canvas.addEventListener("pointerup", endDrag);
-    canvas.addEventListener("pointercancel", () => (drag = null));
+    const lift = (e) => {
+      ptrs.delete(e.pointerId);
+      if (ptrs.size < 2) pinchPrev = 0;
+    };
+    canvas.addEventListener("pointerup", (e) => {
+      lift(e);
+      endDrag(e);
+    });
+    canvas.addEventListener("pointercancel", (e) => {
+      lift(e);
+      drag = null;
+    });
+    canvas.addEventListener(
+      "wheel",
+      (e) => {
+        st.zoomT = clamp(st.zoomT * Math.exp(-e.deltaY * 0.0012), 0.55, 1.7);
+        e.preventDefault();
+        wake();
+      },
+      { passive: false },
+    );
+
+    // phones: tilt the device to tilt the scene (ios asks permission, and only on a tap)
+    const coarse = matchMedia("(pointer: coarse)").matches;
+    let gyroAsked = false;
+    const onTilt = (e) => {
+      if (e.gamma == null || e.beta == null || reduce) return;
+      st.gyro = true;
+      st.mx = clamp(e.gamma / 28, -1, 1);
+      st.my = clamp((e.beta - 55) / 28, -1, 1);
+      wake();
+    };
+    async function enableGyro() {
+      if (gyroAsked || !coarse || reduce) return;
+      gyroAsked = true;
+      try {
+        const D = window.DeviceOrientationEvent;
+        if (
+          D &&
+          typeof D.requestPermission === "function" &&
+          (await D.requestPermission()) !== "granted"
+        )
+          return;
+        addEventListener("deviceorientation", onTilt);
+      } catch (e) {}
+    }
+    canvas.addEventListener("click", enableGyro);
+    if (
+      coarse &&
+      !(
+        window.DeviceOrientationEvent &&
+        typeof DeviceOrientationEvent.requestPermission === "function"
+      )
+    )
+      enableGyro(); // android/others need no permission
     canvas.addEventListener("pointerleave", () => {
       if (st.hover !== -1) {
         st.hover = -1;
@@ -1372,6 +1616,15 @@
     }
     scramble(document.querySelector(".brand .mark"), 900);
     scramble(document.querySelector(".home-text h1"), 1300);
+
+    setInterval(
+      () => {
+        applyTimeTint();
+        buildAtlas();
+        wake();
+      },
+      10 * 60 * 1000,
+    );
 
     placePanels();
     requestAnimationFrame(placePanels);
