@@ -1,6 +1,23 @@
+/*
+ * opening.js - the intro for index.html
+ *
+ * a small package floats in black space over a faint white grid that drifts
+ * toward the top left. click it: it opens, misplace.mp3 starts, the camera
+ * dives into the box (pitch black), and the black fades out into the real site.
+ *
+ * needs three.js self-hosted:
+ *   src/imported/three.module.js  and  src/imported/three.core.js
+ * audio: src/assets/audio/misplace.mp3
+ *
+ * index.html sets html.opening in <head> (so the site never flashes before
+ * this runs). this file removes it when the intro is over.
+ * it plays once per browser session; add ?opening to the url to replay it.
+ * (Esc / Enter / Space still work for keyboard users, there is just no button.)
+ */
 import * as THREE from "./imported/three.module.js";
 
 const root = document.documentElement;
+
 // ---------------------------------------------------------------- helpers
 const clamp = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
 const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
@@ -56,31 +73,9 @@ function labelTexture() {
   return t;
 }
 
-function makeGrid(size, step, color, opacity, y) {
-  // lines are cut into short pieces: three.js fogs per vertex, so one long
-  // line running away from the camera would be black end to end
-  const pts = [];
-  const n = Math.round(size / step);
-  const seg = step * 2;
-  for (let i = -n; i <= n; i++) {
-    const p = i * step;
-    for (let a = -size; a < size; a += seg) {
-      pts.push(a, 0, p, a + seg, 0, p, p, 0, a, p, 0, a + seg);
-    }
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-  const m = new THREE.LineSegments(
-    geo,
-    new THREE.LineBasicMaterial({ color, transparent: true, opacity }),
-  );
-  m.position.y = y;
-  return m;
-}
-
 // ------------------------------------------------------------------- main
 function run() {
-  // overlay (inline styles + !important: hero.css makes everything transparent)
+  // overlay (inline styles: hero.css makes everything transparent)
   const ov = document.createElement("div");
   ov.id = "opening";
   ov.setAttribute("role", "dialog");
@@ -89,11 +84,24 @@ function run() {
     "position:fixed;inset:0;z-index:99999;background:#000!important;overflow:hidden;visibility:visible;opacity:1;touch-action:none";
   document.body.append(ov);
 
+  // the 2d grid: plain css lines, slightly see-through, fading out toward the edges
+  const CELL = 56;
+  const grid = document.createElement("div");
+  const line = "rgba(255,255,255,0.24)";
+  const fade =
+    "radial-gradient(ellipse at 50% 50%, #000 40%, transparent 100%)";
+  grid.style.cssText =
+    "position:absolute;inset:0;pointer-events:none;will-change:background-position;" +
+    `background-image:linear-gradient(${line} 1px,transparent 1px),linear-gradient(90deg,${line} 1px,transparent 1px)!important;` +
+    `background-size:${CELL}px ${CELL}px!important;` +
+    `-webkit-mask-image:${fade};mask-image:${fade};`;
+  ov.append(grid);
+
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: false,
+      alpha: true,
       powerPreference: "high-performance",
     });
   } catch (e) {
@@ -102,35 +110,13 @@ function run() {
   }
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setClearColor(0x000000, 1);
+  renderer.setClearColor(0x000000, 0); // transparent: the grid shows through
   renderer.domElement.style.cssText =
-    "display:block;width:100%;height:100%;background:#000!important";
+    "position:absolute;inset:0;display:block;width:100%;height:100%;background:transparent!important";
   ov.append(renderer.domElement);
-
-  const ui = (css, text) => {
-    const d = document.createElement("div");
-    d.style.cssText =
-      "position:absolute;font:14px/1.4 monospace;color:#69f!important;background:transparent!important;letter-spacing:.12em;user-select:none;" +
-      css;
-    d.textContent = text;
-    ov.append(d);
-    return d;
-  };
-  const hint = ui(
-    "left:0;right:0;bottom:9vh;text-align:center;transition:opacity .6s;",
-    "[ click the package ]",
-  );
-  const skip = ui(
-    "right:18px;bottom:16px;cursor:pointer;opacity:.6;padding:.2em .6em;border:1px solid #69f;",
-    "skip >>",
-  );
-  skip.setAttribute("role", "button");
-  skip.tabIndex = 0;
 
   // --------------------------------------------------------------- scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000);
-  scene.fog = new THREE.FogExp2(0x000000, 0.045);
 
   const camera = new THREE.PerspectiveCamera(
     45,
@@ -151,15 +137,12 @@ function run() {
   violet.position.set(4, -1, 2);
   scene.add(blue, violet);
 
-  const floor = makeGrid(80, 2, 0x7aa6ff, 1, -2.3);
-  const ceil = makeGrid(80, 2, 0xaa55ff, 0.6, 5.2);
-  scene.add(floor, ceil);
-
   // ---------------------------------------------------------- the package
   const W = 2.2,
     H = 1.5,
     D = 1.8;
   const pack = new THREE.Group();
+  pack.scale.setScalar(0.72); // a bit smaller than before
   scene.add(pack);
 
   const card = new THREE.MeshStandardMaterial({
@@ -174,7 +157,6 @@ function run() {
   const black = new THREE.MeshBasicMaterial({
     color: 0x000000,
     side: THREE.BackSide,
-    fog: false,
   });
 
   // five walls, brown outside, pure black inside
@@ -187,9 +169,8 @@ function run() {
       m.rotation.set(rx, ry, 0);
       pack.add(m);
     }
-    return outer;
   };
-  const front = wall(W, H, 0, 0, D / 2, 0, 0);
+  wall(W, H, 0, 0, D / 2, 0, 0);
   wall(W, H, 0, 0, -D / 2, 0, Math.PI);
   wall(D, H, W / 2, 0, 0, 0, Math.PI / 2);
   wall(D, H, -W / 2, 0, 0, 0, -Math.PI / 2);
@@ -249,7 +230,9 @@ function run() {
   // ---------------------------------------------------------------- audio
   let audio = null;
   try {
-    audio = new Audio(new URL("./assets/audio/misplace.mp3", import.meta.url).href);
+    audio = new Audio(
+      new URL("./assets/audio/misplace.mp3", import.meta.url).href,
+    );
     audio.preload = "auto";
     window.openingAudio = audio; // so the rest of the site can mute/stop it
   } catch (e) {}
@@ -257,9 +240,7 @@ function run() {
   // ---------------------------------------------------------------- state
   let phase = "idle"; // idle -> opening -> leaving
   let tClick = 0;
-  let yaw = 0.5,
-    yawFrom = 0,
-    yawTo = 0;
+  const YAW = 0.45; // fixed three-quarter angle, it does not spin
   const mouse = { x: 0, y: 0 };
   let hover = false;
   const ray = new THREE.Raycaster();
@@ -290,7 +271,7 @@ function run() {
     if (phase === "idle" && pick(e)) open();
   };
   const onKey = (e) => {
-    if (e.key === "Escape") finish(true);
+    if (e.key === "Escape") finish();
     else if ((e.key === "Enter" || e.key === " ") && phase === "idle") {
       e.preventDefault();
       open();
@@ -305,26 +286,16 @@ function run() {
   renderer.domElement.addEventListener("pointerdown", onDown);
   addEventListener("keydown", onKey);
   addEventListener("resize", onResize);
-  skip.addEventListener("click", () => finish(true));
-  skip.addEventListener(
-    "keydown",
-    (e) => (e.key === "Enter" || e.key === " ") && finish(true),
-  );
 
   function open() {
     phase = "opening";
     tClick = clock.getElapsedTime();
-    yawFrom = yaw;
-    yawTo = Math.round(yaw / (Math.PI / 2)) * (Math.PI / 2); // square up to the camera
-    hint.style.opacity = "0";
-    skip.style.opacity = "0";
-    skip.style.pointerEvents = "none";
     renderer.domElement.style.cursor = "";
     if (audio) audio.play().catch(() => {}); // the click is the user gesture that allows this
   }
 
   let ended = false;
-  function finish(skipped) {
+  function finish() {
     if (ended) return;
     ended = true;
     phase = "leaving";
@@ -332,7 +303,7 @@ function run() {
     removeEventListener("keydown", onKey);
     removeEventListener("resize", onResize);
     leave(ov, false);
-    // keep drawing black frames while the overlay fades, then free the gpu
+    // keep drawing while the overlay fades, then free the gpu
     setTimeout(() => {
       cancelAnimationFrame(raf);
       renderer.dispose();
@@ -357,48 +328,42 @@ function run() {
     );
   };
   const look = new THREE.Vector3();
-  let last = 0;
 
   function frame() {
     raf = requestAnimationFrame(frame);
     const t = clock.getElapsedTime();
-    const dt = Math.min(0.1, t - last);
-    last = t;
 
-    // the grid slides toward the camera forever
-    floor.position.z = (t * 1.8) % 2;
-    floor.position.x = (t * 0.35) % 2;
-    ceil.position.z = (-t * 1.2) % 2;
+    // the grid drifts toward the top left, forever
+    const off = (-t * 22) % CELL;
+    grid.style.backgroundPosition = `${off}px ${off}px`;
 
     const tt = phase === "idle" ? 0 : t - tClick;
 
     if (phase === "idle") {
-      yaw += dt * 0.28;
-      pack.position.y = Math.sin(t * 1.1) * 0.09;
+      pack.position.set(0, Math.sin(t * 1.1) * 0.06, 0);
       pack.rotation.set(
-        Math.sin(t * 0.7) * 0.06,
-        yaw,
-        Math.sin(t * 0.9) * 0.03,
+        Math.sin(t * 0.7) * 0.03,
+        YAW,
+        Math.sin(t * 0.9) * 0.02,
       );
       const k = hover ? 1 : 0;
       card.emissive.setRGB(0.1 * k, 0.14 * k, 0.28 * k);
       camera.position.set(
-        CAM0.x + mouse.x * 0.45,
-        CAM0.y - mouse.y * 0.25,
+        CAM0.x + mouse.x * 0.3,
+        CAM0.y - mouse.y * 0.18,
         CAM0.z,
       );
       camera.lookAt(0, 0, 0);
-      hint.style.opacity = String(0.55 + 0.45 * Math.sin(t * 3));
     } else {
-      // box: square up, shake while the tape rips, then the flaps swing open
+      // box: turn square to the camera, shake while the tape rips, flaps swing open
       const sq = easeOutCubic(clamp(tt / 0.8));
-      const shake = tt < 0.5 ? (0.5 - tt) * 0.06 : 0;
+      const shake = tt < 0.5 ? (0.5 - tt) * 0.05 : 0;
       pack.position.set(
         (Math.random() - 0.5) * shake,
-        Math.sin(t * 1.1) * 0.09 * (1 - sq),
+        Math.sin(t * 1.1) * 0.06 * (1 - sq),
         (Math.random() - 0.5) * shake,
       );
-      pack.rotation.set(0.06 * (1 - sq), yawFrom + (yawTo - yawFrom) * sq, 0);
+      pack.rotation.set(0.03 * (1 - sq), YAW * (1 - sq), 0);
       card.emissive.setRGB(0.05, 0.07, 0.14);
 
       tape.scale.x = 1 - easeOutCubic(clamp(tt / 0.3));
@@ -418,7 +383,10 @@ function run() {
       bez(L0, L1, L2, e, look);
       camera.lookAt(look);
 
-      if (phase === "opening" && tt > 4.5) finish(false);
+      // the grid dies out as we go in, so the inside is truly pitch black
+      grid.style.opacity = String(1 - clamp((tt - 1.6) / 1.6));
+
+      if (phase === "opening" && tt > 4.5) finish();
     }
     renderer.render(scene, camera);
   }
