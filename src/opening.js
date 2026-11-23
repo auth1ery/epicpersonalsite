@@ -249,7 +249,7 @@ function run() {
   // ---------------------------------------------------------------- audio
   let audio = null;
   try {
-    audio = new Audio(new URL("./assets/audio/caar.mp3", import.meta.url).href);
+    audio = new Audio(new URL("./assets/audio/misplace.mp3", import.meta.url).href);
     audio.preload = "auto";
     window.openingAudio = audio; // so the rest of the site can mute/stop it
   } catch (e) {}
